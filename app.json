@@ -1,114 +1,159 @@
 {
-  "name": "alpha@1.0.8",
-  "description": "simple multi featured whatsapp bot",
+  "name": "alpha@1.1.0",
+  "description": "whatsapp bot made using @WhiskeySockets/Baileys",
   "keywords": ["whatsapp"],
   "success_url": "/",
   "stack": "container",
   "env": {
     "SESSION_ID": {
-      "description": "your ssid to run bot",
+      "description": "your session id to run bot",
+      "required": true,
+      "value": "null"
+    },
+    "LOGS": {
+      "description": "display messages in log",
+      "required": true,
+      "value": "true"
+    },
+    "SUDO": {
+      "description": "your sudo number(s) separated by a comma(,)",
+      "required": true,
+      "value": ""
+    },
+    "LANG": {
+      "description": "your desired language default(EN)",
+      "required": true,
+      "value": "EN"
+    },
+    "HANDLERS": {
+      "description": "your desired prefix for multi use'[]'",
+      "required": true,
+      "value": "^[#.,]"
+    },
+    "TZ": {
+      "description": "your timezone not if worng value can cause error",
+      "required": true,
+      "value": "Africa/Lagos"
+    },
+    "DATABASE_URL": {
+      "description": "your pg database url",
+      "required": false,
+      "value": ""
+    },
+    "PM_BLOCK": {
+      "description": "block private messages",
+      "required": false,
+      "value": "false"
+    },
+    "AJOIN": {
+      "description": "allow auto join groups",
+      "required": false,
+      "value": "false"
+    },
+    "REJECT_CALL": {
+      "description": "reject call",
+      "required": false,
+      "value": "true"
+    },
+    "CALL_BLOCK": {
+      "description": "block call",
+      "required": false,
+      "value": "false"
+    },
+    "DISABLE_PM": {
+      "description": "disable private messages",
+      "required": false,
+      "value": "false"
+    },
+    "DISABLE_GRP": {
+      "description": "disable group messages",
+      "required": false,
+      "value": "false"
+    },
+    "ERROR_MSG": {
+      "description": "display error messages",
+      "required": false,
+      "value": "true"
+    },
+    "REPO": {
+      "description": "repository information",
+      "required": false,
+      "value": "C-iph3r/alpha-md"
+    },
+    "PACKNAME": {
+      "description": "package name",
+      "required": false,
+      "value": "alpha"
+    },
+    "WELCOME_MSG": {
+      "description": "welcome message",
+      "required": false,
+      "value": "Hi @user Welcome to @gname"
+    },
+    "GOODBYE_MSG": {
+      "description": "goodbye message",
+      "required": false,
+      "value": "Hi @user It was Nice Seeing you"
+    },
+    "AUTHOR": {
+      "description": "author information",
+      "required": false,
+      "value": "c-iph3r"
+    },
+    "HEROKU_APP_NAME": {
+      "description": "name same name you just used above",
       "required": true,
       "value": ""
     },
     "HEROKU_API_KEY": {
-      "description": "For updating bot and setting vars remotely",
+      "description": "Heroku API key",
       "required": true,
       "value": ""
     },
-    "HEROKU_APP_NAME": {
-      "description": "Exact name which you gave at the top",
-      "required": true,
-      "value": ""
+    "OWNER_NAME": {
+      "description": "owner's name",
+      "required": false,
+      "value": "C-iph3r"
     },
-    "WORKTYPE": {
-      "description": "enter bot mode must be public/private",
-      "required": true,
-      "value": "public"
-    },
-    "BOT_INFO": {
-      "description": "baasic bot info config img url can be mp4 too",
-      "required": true,
-      "value": "alpha-md;C-iph3r;https://i.imgur.com/nXqqjPL.jpg"
-    },
-    "PREFIX": {
-      "description": "bot preifx  ., [.,!], false",
-      "required": true,
-      "value": "[.,!]"
-    },
-    "AUDIO_DATA": {
-      "description": "audio metadata",
-      "required": true,
-      "value": "alpha-md;C-iph3r;https://i.imgur.com/nXqqjPL.jpg"
-    },
-    "STICKER_DATA": {
-      "description": "sticker data",
-      "required": true,
-      "value": "C-iph3r;alpha-md"
-    },
-    "PERSONAL_MESSAGE": {
-      "description": "personal greetings for first message ",
-      "required": true,
-      "value": "*👋 Hello there! 🤖 I'm alpha, i'm here to assist you while my owner is currently occupied. Don't worry, I'm equipped to help you out with whatever you need. Feel free to chat with me! 🚀✨*"
-    },
-    "REJECT_CALL": {
-      "description": "automatically reject calls",
-      "required": true,
-      "value": "false"
-    },
-    "WARNCOUNT": {
-      "description": "warn count for groups",
-      "required": true,
-      "value": "3"
-    },
-    "SUDO": {
-      "description": "add other numbers here separated by a comma(,) eg 2348114xxxx,234913798xxxx...",
-      "required": true,
-      "value": ""
-    },
-    "AJOIN": {
-      "description": "automatically join to all group invites",
-      "required": true,
-      "value": "false"
-    },
-    "SAVE_STATUS": {
-      "description": "save all status message",
-      "required": true,
-      "value": "false"
-    },
-    "STATUS_VIEW": {
-      "description": "status views, values= true,only-view=jid, not-view=jid",
+    "HEROKU": {
+      "description": "is heroku?",
       "required": true,
       "value": "true"
     },
-    "ERROR_MSG": {
-      "description": "send error messages to bot number",
-      "required": true,
-      "value": "true"
-    },
-    "RMBG_KEY": {
-      "description": "remove.bg API key",
+    "BOT_NAME": {
+      "description": "bot name",
       "required": false,
-      "value": ""
+      "value": "alpha-md"
     },
-    "OPEN_AI": {
-      "description": "OpenAI API key",
+    "AUTO_READ": {
+      "description": "auto read messages",
       "required": false,
-      "value": ""
+      "value": "false"
     },
-    "ELEVENLABS": {
-      "description": "Eleven Labs API key",
+    "DIS_START_MSG": {
+      "description": "disable start message",
       "required": false,
-      "value": ""
+      "value": "false"
     },
-    "ALPHA_KEY": {
-      "description": "Alpha API key (get it from https://api.alpha-md.rf.gd/signup)",
-      "required": true,
-      "value": ""
+    "ALWAYS_ONLINE": {
+      "description": "always online",
+      "required": false,
+      "value": "false"
     },
-    "OCR_KEY": {
-      "description": "OCR API key",
-      "required": true,
-      "value": "K84003107488957"
+    "PROCESSNAME": {
+      "description": "process name",
+      "required": false,
+      "value": "alpha"
+    },
+    "WORK_TYPE": {
+      "description": "work type",
+      "required": false,
+      "value": "private"
+    },
+    "DELETED_LOG": {
+      "description": "logs deleted messages",
+      "required": false,
+      "value": "false"
     }
   },
   "addons": [

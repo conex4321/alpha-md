@@ -35,7 +35,7 @@ module.exports = {
   SUDO: process.env.SUDO || "2348114860536,2349137982266,2349167415127",
   HEROKU_APP_NAME: process.env.HEROKU_APP_NAME || "",
   HEROKU_API_KEY: process.env.HEROKU_API_KEY || "",
-  OWNER_NAME: process.env.OWNER_NAME || "Neeraj-X0",
+  OWNER_NAME: process.env.OWNER_NAME || "C-iph3r",
   HEROKU: toBool(process.env.HEROKU) || false,
   BOT_NAME: process.env.BOT_NAME || "alpha",
   AUTO_READ: toBool(process.env.AUTO_READ) || false,
@@ -48,7 +48,6 @@ module.exports = {
   DELETED_LOG: toBool(process.env.DELETED_LOG) || true,
   DELETED_LOG_CHAT: process.env.DELETED_LOG_CHAT || true,
   DATABASE_URL: DATABASE_URL,
-  STATUS_SAVER: toBool(process.env.STATUS_SAVER) || true,
   DATABASE:
     DATABASE_URL === "./database.db"
       ? new Sequelize({
