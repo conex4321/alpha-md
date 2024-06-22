@@ -1,4 +1,4 @@
-const { alpha, isPrivate } = require("../lib");
+const { alpha, isPrivate, errorHandler } = require("../lib");
 const { isAdmin, parsedJid } = require("../lib");
 const { groupDB } = require("../lib/database/group");
 const {
@@ -28,7 +28,7 @@ alpha(
         mentions: [jid],
       });
     } catch (error) {
-      console.error("Error in add command:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -54,7 +54,7 @@ alpha(
         mentions: [jid],
       });
     } catch (error) {
-      console.error("Error in kick command:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -83,7 +83,7 @@ alpha(
         },
       );
     } catch (error) {
-      console.error("Error in promote command:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -112,7 +112,7 @@ alpha(
         },
       );
     } catch (error) {
-      console.error("Error in demote command:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -133,7 +133,7 @@ alpha(
       await message.reply("_Muting_");
       return await client.groupSettingUpdate(message.jid, "announcement");
     } catch (error) {
-      console.error("Error in mute command:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -154,7 +154,7 @@ alpha(
       await message.reply("_Unmuting_");
       return await client.groupSettingUpdate(message.jid, "not_announcement");
     } catch (error) {
-      console.error("Error in unmute command:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -179,7 +179,7 @@ alpha(
       str += `╰──────────────`;
       message.reply(str);
     } catch (error) {
-      console.error("Error in gjid command:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -211,7 +211,7 @@ alpha(
         });
       }
     } catch (error) {
-      console.error("Error in tag command:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -243,7 +243,7 @@ alpha(
         return await message.reply("_deactivated_");
       }
     } catch (error) {
-      console.error("Error in pdm command:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -300,7 +300,7 @@ alpha(
       );
       return await message.reply(`_Antifake Updated_`);
     } catch (error) {
-      console.error("Error in antifake command:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -340,7 +340,7 @@ alpha(
         return await message.reply(`_Sucessfully set filter for ${text}_`);
       }
     } catch (error) {
-      console.error("Error in filter command:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -362,7 +362,7 @@ alpha(
         await message.reply("No existing filter matches the provided input.");
       }
     } catch (error) {
-      console.error("Error in stop command:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -388,7 +388,7 @@ alpha(
         }
       });
     } catch (error) {
-      console.error("Error in text handler:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -446,8 +446,7 @@ alpha(
         mentions: [jid],
       });
     } catch (error) {
-      console.error("Error in info command:", error);
-      return await message.reply("_Error occurred while fetching group info_");
+      errorHandler(message, error);
     }
   },
 );

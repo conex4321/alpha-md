@@ -1,11 +1,11 @@
-const { alpha, qrcode, Bitly, isPrivate, isUrl, readQr, parsedJid, secondsToDHMS} = require("../lib/");
+const { alpha, qrcode, Bitly, isPrivate, isUrl, readQr, parsedJid, secondsToDHMS, errorHandler } = require("../lib/");
 const { downloadMediaMessage } = require("baileys");
 
 alpha(
   {
     pattern: "vv",
     fromMe: isPrivate,
-    desc: "Forwards The View once messsage",
+    desc: "Forwards the viewed message",
     type: "tool",
   },
   async (message, m) => {
@@ -18,9 +18,9 @@ alpha(
           reuploadRequest: message.client.updateMediaMessage,
         },
       );
-      return await message.sendFile(buffer);
+      await message.sendFile(buffer);
     } catch (error) {
-      console.error("[Error]:", error);
+      errorHandler(message, error);
     }
   },
 );
@@ -33,26 +33,24 @@ alpha(
     type: "tool",
   },
   async (message, match, m) => {
-    match = match || message.reply_message.text;
+    try {
+      match = match || message.reply_message.text;
 
-    if (match) {
-      let buff = await qrcode(match);
-      return await message.sendMessage(message.jid, buff, {}, "image");
-    } else if (message.reply_message.image) {
-      const buffer = await m.quoted.download();
-      readQr(buffer)
-        .then(async (data) => {
-          return await message.sendMessage(message.jid, data);
-        })
-        .catch(async (error) => {
-          console.error("Error:", error.message);
-          return await message.sendMessage(message.jid, error.message);
-        });
-    } else {
-      return await message.sendMessage(
-        message.jid,
-        "*Example : qr test*\n*Reply to a qr image.*",
-      );
+      if (match) {
+        let buff = await qrcode(match);
+        await message.sendMessage(message.jid, buff, {}, "image");
+      } else if (message.reply_message.image) {
+        const buffer = await m.quoted.download();
+        const data = await readQr(buffer);
+        await message.sendMessage(message.jid, data);
+      } else {
+        await message.sendMessage(
+          message.jid,
+          "*Example : qr test*\n*Reply to a qr image.*",
+        );
+      }
+    } catch (error) {
+      errorHandler(message, error);
     }
   },
 );
@@ -61,15 +59,19 @@ alpha(
   {
     pattern: "bitly",
     fromMe: isPrivate,
-    desc: "Converts Url to bitly",
+    desc: "Converts URL to bitly",
     type: "tool",
   },
   async (message, match) => {
-    match = match || message.reply_message.text;
-    if (!match) return await message.reply("_Reply to a url or enter a url_");
-    if (!isUrl(match)) return await message.reply("_Not a url_");
-    let short = await Bitly(match);
-    return await message.reply(short.link);
+    try {
+      match = match || message.reply_message.text;
+      if (!match) return await message.reply("_Reply to a URL or enter a URL_");
+      if (!isUrl(match)) return await message.reply("_Not a valid URL_");
+      let short = await Bitly(match);
+      await message.reply(short.link);
+    } catch (error) {
+      errorHandler(message, error);
+    }
   },
 );
 
@@ -81,23 +83,30 @@ alpha(
     type: "user",
   },
   async (message) => {
-    message.reply(`*Uptime:* ${secondsToDHMS(process.uptime())}`);
+    try {
+      message.reply(`*Uptime:* ${secondsToDHMS(process.uptime())}`);
+    } catch (error) {
+      errorHandler(message, error);
+    }
   },
 );
-
 
 alpha(
   {
     pattern: "fd",
     fromMe: isPrivate,
-    desc: "Forwards the replied Message",
+    desc: "Forwards the replied message",
     type: "tool",
   },
   async (message, match, m) => {
-    if (!m.quoted) return message.reply("Reply to something");
-    let jids = parsedJid(match);
-    for (let i of jids) {
-      await message.forward(i, message.reply_message.message);
+    try {
+      if (!m.quoted) return await message.reply("Reply to something");
+      let jids = parsedJid(match);
+      for (let i of jids) {
+        await message.forward(i, message.reply_message.message);
+      }
+    } catch (error) {
+      errorHandler(message, error);
     }
   },
 );

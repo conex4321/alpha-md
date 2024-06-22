@@ -1,4 +1,4 @@
-const { alpha, isPrivate } = require("../lib/");
+const { alpha, isPrivate, errorHandler } = require("../lib/");
 const { listall } = require("../lib/fancy");
 
 alpha(
@@ -9,31 +9,32 @@ alpha(
     type: "converter",
   },
   async (message, match) => {
-    let text = match;
-    let replyMessageText = message.reply_message && message.reply_message.text;
-
-    if (replyMessageText) {
-      if (!isNaN(match))
-        return await message.reply(styleText(replyMessageText, match));
-
-      let fancyTexts = listAllFancyTexts(replyMessageText);
-      return await message.reply(fancyTexts);
-    }
-
-    if (!text) {
-      let fancyTexts = listAllFancyTexts("Fancy");
-      return await message.reply(fancyTexts);
-    }
-
-    if (!isNaN(match)) {
-      if (match > listAllFancyTexts("Fancy").length) {
-        return await message.sendMessage("Invalid number");
+    try {
+      let text = match;
+      let replyMessageText = message.reply_message && message.reply_message.text;
+      if (replyMessageText) {
+        if (!isNaN(match)) {
+          return await message.reply(styleText(replyMessageText, parseInt(match)));
+        } else {
+          let fancyTexts = listAllFancyTexts(replyMessageText);
+          return await message.reply(fancyTexts);
+        }
       }
-      return await message.reply(styleText(text, match));
+      if (!text) {
+        let fancyTexts = listAllFancyTexts("Fancy");
+        return await message.reply(fancyTexts);
+      }
+      if (!isNaN(match)) {
+        if (parseInt(match) > listAllFancyTexts("Fancy").length) {
+          return await message.reply("Invalid number");
+        }
+        return await message.reply(styleText(text, parseInt(match)));
+      }
+      let fancyTexts = listAllFancyTexts(match);
+      return await message.reply(fancyTexts);
+    } catch (error) {
+      errorHandler(message, error);
     }
-
-    let fancyTexts = listAllFancyTexts(match);
-    return await message.reply(fancyTexts);
   },
 );
 

@@ -1,5 +1,5 @@
 const plugins = require("../lib/plugins");
-const { alpha, isPrivate, runtime } = require("../lib");
+const { alpha, isPrivate, runtime, errorHandler } = require("../lib");
 const { OWNER_NAME, BOT_NAME, TZ } = require("../config");
 const os = require("os");
 const packageJson = require("../package.json");
@@ -74,9 +74,9 @@ Description: ${i.desc}\`\`\``);
         await message.reply(menu);
       }
     } catch (error) {
-      console.error("Error in menu command:", error);
+      errorHandler(message, error);
     }
-  },
+  }
 );
 
 alpha(
@@ -109,9 +109,9 @@ alpha(
       });
       await message.reply(menu);
     } catch (error) {
-      console.error("Error in list command:", error);
+      errorHandler(message, error);
     }
-  },
+  }
 );
 
 alpha(
@@ -128,7 +128,7 @@ alpha(
       const end = Date.now();
       await msg.edit2("```" + (end - start) + "``` *ms*");
     } catch (error) {
-      console.error("Error in ping command:", error);
+      errorHandler(message, error);
     }
-  },
+  }
 );

@@ -1,6 +1,7 @@
 const config = require("../config");
-const { alpha, isPrivate, toAudio } = require("../lib/");
+const { alpha, isPrivate, toAudio, errorHandler } = require("../lib/");
 const { webp2mp4, textToImg } = require("../lib/functions");
+
 alpha(
   {
     pattern: "sticker",
@@ -9,21 +10,26 @@ alpha(
     type: "converter",
   },
   async (message, match, m) => {
-    if (!message.reply_message&& (!message.reply_message.video || !message.reply_message.sticker || !message.reply_message.text))
-      return await message.reply("_Reply to photo/video/text_");
-    var buff;
-    if (message.reply_message.text) {
-      buff = await textToImg(message.reply_message.text);
-    } else {
-      buff = await m.quoted.download();
-    }
+    try {
+      if (!message.reply_message || (!message.reply_message.video && !message.reply_message.sticker && !message.reply_message.text))
+        return await message.reply("_Reply to photo/video/text_");
 
-    message.sendMessage(
-      message.jid,
-      buff,
-      { packname: config.PACKNAME, author: config.AUTHOR },
-      "sticker"
-    );
+      let buff;
+      if (message.reply_message.text) {
+        buff = await textToImg(message.reply_message.text);
+      } else {
+        buff = await m.quoted.download();
+      }
+
+      message.sendMessage(
+        message.jid,
+        buff,
+        { packname: config.PACKNAME, author: config.AUTHOR },
+        "sticker"
+      );
+    } catch (error) {
+      errorHandler(message, error);
+    }
   }
 );
 
@@ -35,12 +41,17 @@ alpha(
     type: "converter",
   },
   async (message, match, m) => {
-    if (!message.reply_message.sticker)
-      return await message.reply("_Reply to a sticker_");
-    const packname = match.split(";")[0] || config.PACKNAME;
-    const author = match.split(";")[1] || config.AUTHOR;
-    let buff = await m.quoted.download();
-    message.sendMessage(message.jid, buff, { packname, author }, "sticker");
+    try {
+      if (!message.reply_message.sticker)
+        return await message.reply("_Reply to a sticker_");
+
+      const packname = match.split(";")[0] || config.PACKNAME;
+      const author = match.split(";")[1] || config.AUTHOR;
+      let buff = await m.quoted.download();
+      message.sendMessage(message.jid, buff, { packname, author }, "sticker");
+    } catch (error) {
+      errorHandler(message, error);
+    }
   }
 );
 
@@ -52,10 +63,15 @@ alpha(
     type: "converter",
   },
   async (message, match, m) => {
-    if (!message.reply_message.sticker)
-      return await message.reply("_Not a sticker_");
-    let buff = await m.quoted.download();
-    return await message.sendMessage(message.jid, buff, {}, "image");
+    try {
+      if (!message.reply_message.sticker)
+        return await message.reply("_Not a sticker_");
+
+      let buff = await m.quoted.download();
+      return await message.sendMessage(message.jid, buff, {}, "image");
+    } catch (error) {
+      errorHandler(message, error);
+    }
   }
 );
 
@@ -67,16 +83,18 @@ alpha(
     type: "downloader",
   },
   async (message, match, m) => {
-    let buff = await m.quoted.download();
-    console.log(typeof buff);
-    buff = await toAudio(buff, "mp3");
-    console.log(typeof buff);
-    return await message.sendMessage(
-      message.jid,
-      buff,
-      { mimetype: "audio/mpeg" },
-      "audio"
-    );
+    try {
+      let buff = await m.quoted.download();
+      buff = await toAudio(buff, "mp3");
+      return await message.sendMessage(
+        message.jid,
+        buff,
+        { mimetype: "audio/mpeg" },
+        "audio"
+      );
+    } catch (error) {
+      errorHandler(message, error);
+    }
   }
 );
 
@@ -88,24 +106,25 @@ alpha(
     type: "downloader",
   },
   async (message, match, m) => {
-    if (
-      !message.reply_message.video ||
-      !message.reply_message.sticker ||
-      !message.reply_message.audio
-    )
-      return await message.reply("_Reply to a sticker/audio/video_");
-    let buff = await m.quoted.download();
-    if (message.reply_message.sticker) {
-      buff = await webp2mp4(buff);
-    } else {
-      buff = await toAudio(buff, "mp4");
+    try {
+      if (!message.reply_message.video && !message.reply_message.sticker && !message.reply_message.audio)
+        return await message.reply("_Reply to a sticker/audio/video_");
+
+      let buff = await m.quoted.download();
+      if (message.reply_message.sticker) {
+        buff = await webp2mp4(buff);
+      } else {
+        buff = await toAudio(buff, "mp4");
+      }
+      return await message.sendMessage(
+        message.jid,
+        buff,
+        { mimetype: "video/mp4" },
+        "video"
+      );
+    } catch (error) {
+      errorHandler(message, error);
     }
-    return await message.sendMessage(
-      message.jid,
-      buff,
-      { mimetype: "video/mp4" },
-      "video"
-    );
   }
 );
 
@@ -117,9 +136,14 @@ alpha(
     type: "converter",
   },
   async (message, match, m) => {
-    if (!message.reply_message.sticker)
-      return await message.reply("_Reply to a sticker_");
-    let buff = await m.quoted.download();
-    return await message.sendMessage(message.jid, buff, {}, "image");
+    try {
+      if (!message.reply_message.sticker)
+        return await message.reply("_Reply to a sticker_");
+
+      let buff = await m.quoted.download();
+      return await message.sendMessage(message.jid, buff, {}, "image");
+    } catch (error) {
+      errorHandler(message, error);
+    }
   }
 );

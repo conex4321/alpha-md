@@ -1,10 +1,10 @@
 const config = require("../config");
 const { PROCESSNAME } = require("../config");
-const { alpha } = require("../lib/");
+const { alpha, errorHandler } = require("../lib/");
 const { exec } = require("child_process");
 const simplegit = require("simple-git");
 const git = simplegit();
-var branch = config.BRANCH;
+const branch = config.BRANCH;
 
 alpha(
   {
@@ -14,75 +14,81 @@ alpha(
     type: "user",
   },
   async (message, match) => {
-    prefix = message.prefix;
-    await git.fetch();
+    try {
+      let prefix = message.prefix;
+      await git.fetch();
 
-    var commits = await git.log([branch + "..origin/" + branch]);
-    if (match === "now") {
-      if (commits.total === 0) {
-        return await message.sendMessage(
-          message.jid,
-          "```No changes in the latest commit```",
-        );
-      }
-      await message.sendMessage(message.jid, "*Updating...*");
-      await exec(
-        "git stash && git pull origin " + config.BRANCH,
-        async (err, stdout, stderr) => {
-          if (err) {
-            return await message.sendMessage(
-              message.jid,
-              "```" + stderr + "```",
-            );
-          }
-          await message.sendMessage(message.jid, "*Restarting...*");
-          let dependancy = await updatedDependencies();
-          if (dependancy) {
-            await message.reply(
-              "*Dependancies changed installing new dependancies *",
-            );
-            await message.reply("*Restarting...*");
-            exec(
-              "npm install && pm2 restart " + PROCESSNAME,
-              async (err, stdout, stderr) => {
+      let commits = await git.log([branch + "..origin/" + branch]);
+      if (match === "now") {
+        if (commits.total === 0) {
+          return await message.sendMessage(
+            message.jid,
+            "```No changes in the latest commit```",
+          );
+        }
+        await message.sendMessage(message.jid, "*Updating...*");
+        await exec(
+          "git stash && git pull origin " + config.BRANCH,
+          async (err, stdout, stderr) => {
+            if (err) {
+              errorHandler(message, err);
+              return await message.sendMessage(
+                message.jid,
+                "```" + stderr + "```",
+              );
+            }
+            await message.sendMessage(message.jid, "*Restarting...*");
+            let dependencyChanged = await updatedDependencies();
+            if (dependencyChanged) {
+              await message.reply(
+                "*Dependencies changed. Installing new dependencies...*",
+              );
+              await exec(
+                "npm install && pm2 restart " + PROCESSNAME,
+                async (err, stdout, stderr) => {
+                  if (err) {
+                    errorHandler(message, err);
+                    return await message.sendMessage(
+                      message.jid,
+                      "```" + stderr + "```",
+                    );
+                  }
+                },
+              );
+            } else {
+              await message.reply("*Restarting...*");
+              exec("pm2 restart " + PROCESSNAME, async (err, stdout, stderr) => {
                 if (err) {
+                  errorHandler(message, err);
                   return await message.sendMessage(
                     message.jid,
                     "```" + stderr + "```",
                   );
                 }
-              },
-            );
-          } else {
-            await message.reply("*Restarting...*");
-            exec("pm2 restart " + PROCESSNAME, async (err, stdout, stderr) => {
-              if (err) {
-                return await message.sendMessage(
-                  message.jid,
-                  "```" + stderr + "```",
-                );
-              }
-            });
-          }
-        },
-      );
-    } else {
-      if (commits.total === 0) {
-        return await message.sendMessage(
-          message.jid,
-          "```No changes in the latest commit```",
+              });
+            }
+          },
         );
       } else {
-        let changes = "_New update available!_\n\n";
-        changes += "*Commits:* ```" + commits.total + "```\n";
-        changes += "*Branch:* ```" + branch + "```\n";
-        changes += "*Changes:* \n";
-        commits.all.forEach((commit, index) => {
-          changes += "```" + (index + 1) + ". " + commit.message + "```\n";
-        });
-        changes += "\n*To update, send* ```" + prefix + "update now```";
-        await message.sendMessage(message.jid, changes);
+        if (commits.total === 0) {
+          return await message.sendMessage(
+            message.jid,
+            "```No changes in the latest commit```",
+          );
+        } else {
+          let changes = "_New update available!_\n\n";
+          changes += "*Commits:* ```" + commits.total + "```\n";
+          changes += "*Branch:* ```" + branch + "```\n";
+          changes += "*Changes:* \n";
+          commits.all.forEach((commit, index) => {
+            changes += "```" + (index + 1) + ". " + commit.message + "```\n";
+          });
+          changes += "\n*To update, send* ```" + prefix + "update now```";
+          await message.sendMessage(message.jid, changes);
+        }
       }
+    } catch (error) {
+      errorHandler(message, error);
     }
   },
 );

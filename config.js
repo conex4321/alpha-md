@@ -19,7 +19,7 @@ module.exports = {
   DISABLE_PM: toBool(process.env.DISABLE_PM) || false,
   DISABLE_GRP: toBool(process.env.DISABLE_GRP) || false,
   ERROR_MSG: toBool(process.env.ERROR_MSG) || true,
-  SESSION_ID: process.env.SESSION_ID || "null",
+  SESSION_ID: process.env.SESSION_ID || "A_L_P_H_A_24_06_22_0O8M_3D_M7",
   LANG: process.env.LANG || "EN",
   HANDLERS:
     process.env.HANDLERS === "false" || process.env.HANDLERS === "null"
@@ -44,9 +44,7 @@ module.exports = {
   PROCESSNAME: process.env.PROCESSNAME || "alpha",
   WORK_TYPE: process.env.WORK_TYPE || "private",
   TZ: process.env.TZ || "Africa/Lagos",
-  SESSION_ID: process.env.SESSION_ID || "",
   DELETED_LOG: toBool(process.env.DELETED_LOG) || true,
-  DELETED_LOG_CHAT: process.env.DELETED_LOG_CHAT || true,
   DATABASE_URL: DATABASE_URL,
   DATABASE:
     DATABASE_URL === "./database.db"

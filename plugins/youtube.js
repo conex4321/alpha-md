@@ -1,4 +1,4 @@
-const { alpha, isPrivate, searchYT, PREFIX } = require("../lib");
+const { alpha, isPrivate, searchYT, PREFIX, errorHandler } = require("../lib");
 
 alpha(
   {
@@ -8,9 +8,10 @@ alpha(
     type: "downloader",
   },
   async (message, match) => {
-    match = match || message.reply_message.text;
-    if (!match) return await message.reply("Give me a query");
     try {
+      match = match || message.reply_message.text;
+      if (!match) return await message.reply("Give me a query");
+
       const results = await searchYT(match);
       let buttons = [];
       let sections = [];
@@ -29,7 +30,7 @@ alpha(
       buttons.push({
         type: "list",
         params: {
-          title: 'click to see results',
+          title: 'Click to see results',
           sections: sections,
         },
       });
@@ -39,11 +40,11 @@ alpha(
         button: buttons,
         header: {
           title: "Alpha-md",
-          subtitle: "Whatsapp Bot",
+          subtitle: "WhatsApp Bot",
           hasMediaAttachment: false,
         },
         footer: {
-          text: "click to get result",
+          text: "Click to get result",
         },
         body: {
           text: `YouTube search results for ${match}`,
@@ -51,12 +52,10 @@ alpha(
       };
       await message.sendMessage(message.jid, data, {}, "interactive");
     } catch (error) {
-      console.error("Error searching YouTube:", error);
-      await message.reply("Error fetching YouTube results");
+      errorHandler(message, error);
     }
   }
 );
-
 
 alpha(
   {
@@ -66,9 +65,10 @@ alpha(
     type: "downloader",
   },
   async (message, match) => {
-    match = match || message.reply_message.text;
-    if (!match) return await message.reply("Give me a query");
     try {
+      match = match || message.reply_message.text;
+      if (!match) return await message.reply("Give me a query");
+
       const results = await searchYT(match);
       let buttons = [];
       let sections = [];
@@ -87,7 +87,7 @@ alpha(
       buttons.push({
         type: "list",
         params: {
-          title: 'click to see results',
+          title: 'Click to see results',
           sections: sections,
         },
       });
@@ -97,11 +97,11 @@ alpha(
         button: buttons,
         header: {
           title: "Alpha-md",
-          subtitle: "Whatsapp Bot",
+          subtitle: "WhatsApp Bot",
           hasMediaAttachment: false,
         },
         footer: {
-          text: "click to get result",
+          text: "Click to get result",
         },
         body: {
           text: `YouTube search results for ${match}`,
@@ -109,8 +109,7 @@ alpha(
       };
       await message.sendMessage(message.jid, data, {}, "interactive");
     } catch (error) {
-      console.error("Error searching YouTube:", error);
-      await message.reply("Error fetching YouTube results");
+      errorHandler(message, error);
     }
   }
 );

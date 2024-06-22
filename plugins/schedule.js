@@ -1,14 +1,14 @@
 const cron = require("node-cron");
 const ScheduleDB = require("../lib/database/schedule");
-const { alpha, isAdmin, config } = require("../lib");
+const { alpha, isAdmin, config, errorHandler } = require("../lib");
 
 const jobFunctions = {
   muteGroup: async (message, jid) => {
     try {
-      console.log(`muting group ${jid}`);
+      console.log(`Muting group ${jid}`);
       await message.client.groupSettingUpdate(jid, "announcement");
     } catch (error) {
-      console.error(`Error muting group ${jid}:`, error);
+      throw error;
     }
   },
   unmuteGroup: async (message, jid) => {
@@ -16,7 +16,7 @@ const jobFunctions = {
       console.log(`Unmuting group ${jid}`);
       await message.client.groupSettingUpdate(jid, "not_announcement");
     } catch (error) {
-      console.error(`Error unmuting group ${jid}:`, error);
+      throw error; 
     }
   },
 };
@@ -33,7 +33,7 @@ const scheduleModule = {
       console.log(`Scheduled job for ${timeString}`);
       return cronJob;
     } catch (error) {
-      console.error("Error scheduling cron job:", error);
+      throw error; 
     }
   },
 
@@ -46,7 +46,7 @@ const scheduleModule = {
       });
       console.log(`Saved schedule for chatId: ${chatId}, time: ${timeString}`);
     } catch (error) {
-      console.error("Error saving schedule:", error);
+      throw error; 
     }
   },
 
@@ -56,7 +56,7 @@ const scheduleModule = {
         where: { chatId },
       });
     } catch (error) {
-      console.error("Error getting schedule:", error);
+      throw error; 
     }
   },
 
@@ -77,7 +77,7 @@ const scheduleModule = {
       }
       console.log(`Started schedules for chatId: ${chatId}`);
     } catch (error) {
-      console.error("Error starting schedules:", error);
+      throw error; 
     }
   },
 };
@@ -102,9 +102,9 @@ alpha(
       await scheduleModule.startSchedule(message, message.jid);
       return await message.reply(`_Scheduled to mute the group at ${time}_`);
     } catch (error) {
-      console.error("Error in amute command:", error);
+      errorHandler(message, error);
     }
-  },
+  }
 );
 
 alpha(
@@ -127,7 +127,7 @@ alpha(
       await scheduleModule.startSchedule(message, message.jid);
       return await message.reply(`_Scheduled to unmute the group at ${time}_`);
     } catch (error) {
-      console.error("Error in aunmute command:", error);
+      errorHandler(message, error);
     }
-  },
+  }
 );

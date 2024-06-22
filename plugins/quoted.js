@@ -1,4 +1,4 @@
-const { alpha, isPrivate, serialize } = require("../lib/");
+const { alpha, isPrivate, serialize, errorHandler } = require("../lib/");
 const { loadMessage } = require("../lib/database/Store");
 
 alpha(
@@ -8,19 +8,28 @@ alpha(
     desc: "quoted message",
   },
   async (message, match) => {
-    if (!message.reply_message)
-      return await message.reply("*Reply to a message*");
-    let key = message.reply_message.key;
-    let msg = await loadMessage(key.id);
-    if (!msg)
-      return await message.reply(
-        "_Message not found maybe bot might not be running at that time_",
+    try {
+      if (!message.reply_message)
+        return await message.reply("*Reply to a message*");
+
+      let key = message.reply_message.key;
+      let msg = await loadMessage(key.id);
+      
+      if (!msg)
+        return await message.reply("_Message not found_");
+
+      let serializedMessage = await serialize(
+        JSON.parse(JSON.stringify(msg.message)),
+        message.client,
       );
-    msg = await serialize(
-      JSON.parse(JSON.stringify(msg.message)),
-      message.client,
-    );
-    if (!msg.quoted) return await message.reply("No quoted message found");
-    await message.forward(message.jid, msg.quoted.message);
+
+      if (!serializedMessage.quoted)
+        return await message.reply("No quoted message found");
+
+      await message.forward(message.jid, serializedMessage.quoted.message);
+    } catch (error) {
+      console.error("Error in quoted command:", error);
+      errorHandler(message, error);
+    }
   },
 );

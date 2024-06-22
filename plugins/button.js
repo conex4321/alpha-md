@@ -1,4 +1,4 @@
-const { alpha, isPrivate } = require("../lib");
+/*const { alpha, isPrivate } = require("../lib");
 
 alpha(
   {
@@ -87,4 +87,4 @@ alpha(
     };
     return await message.sendMessage(message.jid, data, {}, "interactive");
   },
-);
+);*/
