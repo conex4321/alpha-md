@@ -3,6 +3,10 @@ const { alpha, isPrivate, runtime, errorHandler } = require("../lib");
 const { OWNER_NAME, BOT_NAME, TZ } = require("../config");
 const os = require("os");
 const packageJson = require("../package.json");
+const { listall } = require("../lib/fancy");
+function styleText(text) {
+  return listall(text)[0];
+}
 
 alpha(
   {
@@ -30,7 +34,7 @@ Description: ${i.desc}\`\`\``);
         let [date, time] = new Date()
           .toLocaleString("en-IN", { timeZone: TZ })
           .split(",");
-        let menu = `╭━〔 ${BOT_NAME} 〕━◉
+        let menu = `╭━〔 ${styleText(BOT_NAME, 1)} 〕━◉
 ┃╭━━━━━━━━━━━━━━◉
 ┃┃ *Plugins :-* ${plugins.commands.length.toString()}
 ┃┃ *User :-* ${message.pushName}
@@ -40,6 +44,7 @@ Description: ${i.desc}\`\`\``);
 ┃┃ *Mode :-* ${isPrivate ? "private" : "public"}
 ┃┃ *Date :-* ${date.trim()}
 ┃┃ *Time :-* ${time.trim()}
+┃┃ *Uptime :-* ${time.trim()}
 ┃┃ *Ram :-* ${Math.round((os.totalmem() - os.freemem()) / 1024 / 1024)}MB
 ┃╰━━━━━━━━━━━━━◉`;
 
@@ -60,16 +65,16 @@ Description: ${i.desc}\`\`\``);
 
         category.sort().forEach((cmmd) => {
           menu += `
-┠┌─⭓『 *${cmmd.toUpperCase()}* 』`;
+┠┌─⭓『 *${styleText(cmmd.toLowerCase(), 1)}* 』`;
           let comad = cmnd.filter(({ type }) => type == cmmd);
           comad.forEach(({ cmd }) => {
-            menu += `\n┃│◦ _${cmd.trim()}_ `;
+            menu += `\n┃│◦ _${styleText(cmd.trim(), 1)}_`;
           });
           menu += `\n┃└──────────⭓`;
         });
 
         menu += `
-╰━━━━━━━━━━━━━◉_`;
+╰━━━━━━━━━━━━━◉`;
 
         await message.reply(menu);
       }

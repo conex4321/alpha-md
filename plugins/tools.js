@@ -44,9 +44,7 @@ alpha(
         const data = await readQr(buffer);
         await message.sendMessage(message.jid, data);
       } else {
-        await message.sendMessage(
-          message.jid,
-          "*Example : qr test*\n*Reply to a qr image.*",
+        await message.sendMessage(message.jid,"*Example : qr test*\n*Reply to a qr image.*",
         );
       }
     } catch (error) {
