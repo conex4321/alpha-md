@@ -126,7 +126,7 @@ alpha(
       const start = Date.now();
       const msg = await message.sendMessage(message.jid, "*Pong!*");
       const end = Date.now();
-      await msg.edit2("```" + (end - start) + "``` *ms*");
+      await message.sendMessage(message.jid, "```" + (end - start) + "``` *ms*");
     } catch (error) {
       errorHandler(message, error);
     }

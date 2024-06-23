@@ -14,7 +14,7 @@ function containsBannedWord(message, bannedWords) {
   return words.some((word) => bannedWords.includes(word.toLowerCase()));
 }
 
-alpha(
+/*alpha(
   {
     on: "message",
     fromMe: false,
@@ -177,3 +177,4 @@ alpha(
     }
   },
 );
+*/

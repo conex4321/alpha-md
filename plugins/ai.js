@@ -12,19 +12,29 @@ alpha(
   async (message, match) => {
     try {
       match = match || message.reply_message.text;
-      if (!match) return await message.sendMessage(message.jid, "Provide a text");
+      if (!match) {
+        await message.sendMessage(message.jid, "Provide a text");
+        return;
+      }
       let buff = `https://api.gurusensei.workers.dev/dream?prompt=${encodeURIComponent(match)}`;
+      let response = await fetch(buff);
+      if (!response.ok) {
+        throw new Error(`Image generation failed with status: ${response.status}`);
+      }
+
+      let imageBuffer = await response.arrayBuffer();
       await message.sendMessage(
         message.jid,
-        buff,
+        { image: Buffer.from(imageBuffer), caption: "```Alpha Dall-E Interface```" },
         {
           mimetype: "image/jpeg",
           caption: "```Alpha Dall-E Interface```",
         },
-        "image",
+        "image"
       );
     } catch (error) {
-      errorHandler(message, error);
+      console.error("Image generation error:", error);
+      await message.sendMessage(message.jid, "An error occurred while generating the image. Please try again later.");
     }
   }
 );
