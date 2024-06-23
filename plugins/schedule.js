@@ -3,18 +3,22 @@ const ScheduleDB = require("../lib/database/schedule");
 const { alpha, isAdmin, config, errorHandler } = require("../lib");
 
 const jobFunctions = {
-  muteGroup: async (message, jid) => {
+  muteGroup: async (message, jid, scheduleId) => {
     try {
-      console.log(`Muting group ${jid}`);
+    //  console.log(`Muting group ${jid}`);
       await message.client.groupSettingUpdate(jid, "announcement");
+      await message.sendMessage(jid, "_muted group_\n> automated System.");
+      await scheduleModule.deleteSchedule(scheduleId);
     } catch (error) {
       throw error;
     }
   },
-  unmuteGroup: async (message, jid) => {
+  unmuteGroup: async (message, jid, scheduleId) => {
     try {
-      console.log(`Unmuting group ${jid}`);
+     // console.log(`Unmuting group ${jid}`);
       await message.client.groupSettingUpdate(jid, "not_announcement");
+      await message.sendMessage(jid, "_unmuted group_\n> automated System.");
+      await scheduleModule.deleteSchedule(scheduleId);
     } catch (error) {
       throw error; 
     }
@@ -22,29 +26,49 @@ const jobFunctions = {
 };
 
 const scheduleModule = {
-  scheduleCron: async (timeString, jobFunction) => {
+  scheduleCron: async (timeString, jobFunction, ...args) => {
     try {
       let [hours, minutes] = timeString.split(":");
-      let cronJob = cron.schedule(`${minutes} ${hours} * * *`, jobFunction, {
+      let cronJob = cron.schedule(`${minutes} ${hours} * * *`, async () => {
+        await jobFunction(...args);
+        cronJob.stop();
+      }, {
         scheduled: false,
         timezone: config.TZ,
       });
       cronJob.start();
-      console.log(`Scheduled job for ${timeString}`);
+     // console.log(`Scheduled job for ${timeString}`);
       return cronJob;
     } catch (error) {
       throw error; 
     }
   },
 
+  generateId: async () => {
+    const minId = 100000;
+    const maxId = 999999;
+    let id;
+    let exists;
+
+    do {
+      id = Math.floor(Math.random() * (maxId - minId + 1)) + minId;
+      exists = await ScheduleDB.findOne({ where: { id } });
+    } while (exists);
+
+    return id;
+  },
+
   saveSchedule: async (chatId, timeString, jobFunctionName) => {
     try {
-      await ScheduleDB.create({
+      const id = await scheduleModule.generateId();
+      const schedule = await ScheduleDB.create({
+        id,
         chatId,
         time: timeString,
         jobFunction: jobFunctionName,
       });
-      console.log(`Saved schedule for chatId: ${chatId}, time: ${timeString}`);
+     // console.log(`Saved schedule for chatId: ${chatId}, time: ${timeString}`);
+      return schedule.id;
     } catch (error) {
       throw error; 
     }
@@ -60,6 +84,17 @@ const scheduleModule = {
     }
   },
 
+  deleteSchedule: async (scheduleId) => {
+    try {
+      await ScheduleDB.destroy({
+        where: { id: scheduleId },
+      });
+    //  console.log(`Deleted schedule with id: ${scheduleId}`);
+    } catch (error) {
+      throw error;
+    }
+  },
+
   startSchedule: async (message, chatId = "all") => {
     try {
       const schedulesToStart =
@@ -70,12 +105,16 @@ const scheduleModule = {
       for (let schedule of schedulesToStart) {
         const jobFunction = jobFunctions[schedule.jobFunction];
         if (jobFunction) {
-          await scheduleModule.scheduleCron(schedule.time, async () =>
-            jobFunction(message, schedule.chatId),
+          await scheduleModule.scheduleCron(
+            schedule.time,
+            jobFunction,
+            message,
+            schedule.chatId,
+            schedule.id
           );
         }
       }
-      console.log(`Started schedules for chatId: ${chatId}`);
+     // console.log(`Started schedules for chatId: ${chatId}`);
     } catch (error) {
       throw error; 
     }
@@ -98,7 +137,7 @@ alpha(
       let time = match;
       if (!time)
         return await message.reply("_Please specify a time in HH:MM format_");
-      await scheduleModule.saveSchedule(message.jid, time, "muteGroup");
+      const scheduleId = await scheduleModule.saveSchedule(message.jid, time, "muteGroup");
       await scheduleModule.startSchedule(message, message.jid);
       return await message.reply(`_Scheduled to mute the group at ${time}_`);
     } catch (error) {
@@ -123,7 +162,7 @@ alpha(
       let time = match;
       if (!time)
         return await message.reply("_Please specify a time in HH:MM format_");
-      await scheduleModule.saveSchedule(message.jid, time, "unmuteGroup");
+      const scheduleId = await scheduleModule.saveSchedule(message.jid, time, "unmuteGroup");
       await scheduleModule.startSchedule(message, message.jid);
       return await message.reply(`_Scheduled to unmute the group at ${time}_`);
     } catch (error) {
