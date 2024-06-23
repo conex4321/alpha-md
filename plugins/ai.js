@@ -1,4 +1,4 @@
-/*const { alpha, isPrivate, photoleap, errorHandler } = require("../lib/");
+const { alpha, isPrivate, photoleap, errorHandler } = require("../lib/");
 const { removeBg } = require("../lib/functions");
 const config = require("../config");
 
@@ -91,4 +91,3 @@ alpha(
     }
   }
 );
-*/

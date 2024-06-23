@@ -1,109 +1,139 @@
-const { alpha, errorHandler, extractUrlsFromString } = require("../lib");
+const { alpha, errorHandler, PREFIX } = require("../lib");
 const axios = require("axios");
 const fs = require("fs");
-const { personalDB } = require("../lib/database/personal");
+const { PluginDB, installPlugin } = require("../lib/database").Plugins;
 
 alpha(
   {
-    pattern: "plugin",
+    pattern: "install",
     fromMe: true,
     desc: "Installs External plugins",
     type: "misc",
   },
   async (message, match) => {
-    match = match || message.reply_message.text;
+    if (!match) {
+      return await message.sendMessage(message.jid, "_Send a plugin URL_");
+    }
+
     try {
-      if (!match) {
-        return await message.sendMessage(message.jid, "_Send a plugin URL_");
-      }
-      if (match && extractUrlsFromString(match)) {
-        await message.reply("_Please wait, installing..._");
-        const urll = extractUrlsFromString(match);
-        
-        if (!urll[0]) return message.reply("_Invalid URL provided._");
-        
-        urll.map(async (url) => {
-          let NewUrl = !url?.toString().includes('/raw') ? url.toString() : url.toString().split('/raw')[0];
-          let plugin_name;
-          
-          let { data, status } = await axios(NewUrl + '/raw').catch((e) => {
-            return message.reply("_Invalid URL provided._");
-          });          
-          if (status == 200) {
-            try {
-              plugin_name = data.match(/(?<=pattern:) ["'](.*?)["']/g).map(match => match.trim().split(" ")[0]).join(', ').replace(/'/g, '').replace(/"/g, '');
-              fs.writeFileSync(__dirname + "/" + plugin_name.split(',')[0] + ".js", data);
-              require("./" + plugin_name.split(',')[0]);
-            } catch (e) {
-              fs.unlinkSync(__dirname + "/" + plugin_name.split(',')[0] + ".js");
-              return await message.reply(e.toString());
-            }
-            await message.reply("_Installed plugin(s):_ " + plugin_name);
-            await personalDB(['plugins'], {
-              content: {
-                [plugin_name.split(',')[0]]: NewUrl
-              }
-            }, 'add');            
-            fs.unlinkSync(__dirname + "/" + plugin_name.split(',')[0] + ".js");
-          }
-        });
-      } else {
-        const { plugins } = await personalDB(['plugins'], {
-          content: {}
-        }, 'get');        
-        if (!Object.keys(plugins)[0]) {
-          return await message.reply("_There are no installed plugins._");
+      var url = new URL(match);
+    } catch (e) {
+      console.log(e);
+      return await message.sendMessage(message.jid, "_Invalid URL_");
+    }
+
+    if (url.host === "gist.github.com") {
+      url.host = "gist.githubusercontent.com";
+      url = url.toString() + "/raw";
+    } else {
+      url = url.toString();
+    }
+
+    let plugin_name;
+    let plugid;
+    try {
+      const { data, status } = await axios.get(url);
+      if (status === 200) {
+        plugin_name = data.match(/(?<=pattern:) ["'](.*?)["']/g).map(match => match.trim().split(" ")[0]).join(', ').replace(/'/g, '').replace(/"/g, '');
+        if (!plugin_name) {
+          plugin_name = "__" + Math.random().toString(36).substring(8);
         }
-        let text = "_List of Installed Plugins:_\n\n";        
-        for (const p in plugins) {
-          text += `_*${p}*_\n_${plugins[p]}_\n\n`;
-        }        
-        return await message.reply(text);
+        fs.writeFileSync(__dirname + "/" + plugin_name.split(',')[0] + ".js", data);
+        try {
+          require("./" + plugin_name.split(',')[0]);
+        } catch (e) {
+          fs.unlinkSync(__dirname + "/" + plugin_name.split(',')[0] + ".js");
+          return await message.sendMessage(
+            message.jid,
+            "Invalid Plugin\n ```" + e + "```"
+          );
+        }
+        plugid = genid();
+        await installPlugin(url, plugid, plugin_name.split(','));
+        await message.sendMessage(
+          message.jid,
+          `_Installed plugin(s): ${plugin_name}_\n_with ID ${plugid}_\n_use ${PREFIX}remove ${plugid} to remove plugin_`
+        );
       }
     } catch (error) {
       errorHandler(message, error);
-      return await message.sendMessage(message.jid, "_Failed to fetch plugin._");
+      return await message.sendMessage(message.jid, "Failed to fetch plugin");
     }
   }
 );
 
 alpha(
+  { pattern: "plugin", fromMe: true, desc: "Plugin list", type: "misc" },
+  async (message, match) => {
+    try {
+      var messageText = "";
+      var plugins = await PluginDB.findAll();
+      
+      if (plugins.length < 1) {
+        return await message.sendMessage(
+          message.jid,
+          "_No external plugin(s) installed_"
+        );
+      } else {
+        plugins.forEach((plugin) => {
+          messageText +=
+            "```" +
+            plugin.dataValues.name +
+            "```: " +
+            plugin.dataValues.url            
+        });
+        return await message.sendMessage(message.jid, messageText);
+      }
+    } catch (error) {
+      errorHandler(message, error);
+      return await message.sendMessage(
+        message.jid,
+        "Failed to fetch installed plugin(s)"
+      );
+    }
+  }
+);
+
+
+
+alpha(
   {
     pattern: "remove",
     fromMe: true,
-    desc: "Remove external plugins",
+    desc: "Remove external plugin(s)",
     type: "user",
   },
   async (message, match) => {
     try {
       if (!match) {
-        return await message.reply("*Give me a plugin name that you want to remove*");
-      }      
-      const { plugins } = await personalDB(['plugins'], {
-        content: {}
-      }, 'get');      
-      if (!Object.keys(plugins)[0]) {
-        return await message.reply("_There are no installed plugins to remove._");
-      }      
-      let Available = false;
-       for (const p in plugins) {
-        if (p == match) {
-          Available = true;
-          await personalDB(['plugins'], {
-            content: {
-              id: match
-            }
-          }, 'delete');          
-          await message.reply("_Plugin removed successfully! Type 'restart' to apply changes._");
-          break;
-        }
-      }      
-      if (!Available) {
-        return await message.reply("_Plugin not found in the installed plugins list._");
+        return await message.sendMessage(message.jid, "_Need a plugin ID_");
+      }
+      
+      var plugin = await PluginDB.findAll({ where: { name: match } });
+      
+      if (plugin.length < 1) {
+        return await message.sendMessage(message.jid, "_Plugin not found_");
+      } else {
+        await plugin[0].destroy();
+        delete require.cache[require.resolve("./" + match + ".js")];
+        fs.unlinkSync(__dirname + "/" + match + ".js");
+        await message.sendMessage(message.jid, `Plugin ${match} deleted`);
       }
     } catch (error) {
       errorHandler(message, error);
-      return await message.sendMessage(message.jid, "_Failed to remove plugin._");
+      return await message.sendMessage(
+        message.jid,
+        "Failed to remove plugin"
+      );
     }
   }
 );
+
+function genid() {
+  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return result;
+}
