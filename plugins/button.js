@@ -1,4 +1,4 @@
-/*const { alpha, isPrivate } = require("../lib");
+const { alpha, isPrivate } = require("../lib");
 
 alpha(
   {
@@ -62,7 +62,7 @@ alpha(
           params: {
             display_text: "copy",
             id: "123456789",
-            copy_code: "message",
+            copy_code: "https://gist.github.com/Primi373-creator/13cb4af738701cf8a9f9e74223164ff3",
           },
         },
         {
@@ -74,7 +74,7 @@ alpha(
         },
       ],
       header: {
-        title: "X-Asena",
+        title: "alpha",
         subtitle: "WhatsApp Bot",
         hasMediaAttachment: false,
       },
@@ -87,4 +87,4 @@ alpha(
     };
     return await message.sendMessage(message.jid, data, {}, "interactive");
   },
-);*/
+);
