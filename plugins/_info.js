@@ -34,7 +34,7 @@ Description: ${i.desc}\`\`\``);
         let [date, time] = new Date()
           .toLocaleString("en-IN", { timeZone: TZ })
           .split(",");
-        let menu = `╭━〔 ${styleText(BOT_NAME, 1)} 〕━◉
+        let menu = `╭━〔 *${styleText(BOT_NAME, 1)}* 〕━◉
 ┃╭━━━━━━━━━━━━━━◉
 ┃┃ *Plugins :-* ${plugins.commands.length.toString()}
 ┃┃ *User :-* ${message.pushName}
