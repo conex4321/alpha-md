@@ -131,7 +131,11 @@ alpha(
       const start = Date.now();
       const msg = await message.sendMessage(message.jid, "*Pong!*");
       const end = Date.now();
-      await message.sendMessage(message.jid, "```" + (end - start) + "``` *ms*");
+      const latency = end - start;
+      await message.client.sendMessage(message.jid, {
+        text: "```" + latency + "``` *ms*",
+        edit: msg.key
+      });
     } catch (error) {
       errorHandler(message, error);
     }
