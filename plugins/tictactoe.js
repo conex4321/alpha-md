@@ -48,7 +48,7 @@ alpha(
       let TicTacToe = require("../lib/tictactoe");
       this.game = this.game ? this.game : {};
 
-      if (
+      if (  
         Object.values(this.game).find(
           (room) =>
             room.id.startsWith("tictactoe") &&
@@ -102,9 +102,7 @@ Current turn: @${room.game.currentTurn.split("@")[0]}
           state: "WAITING",
         };
         if (match) room.name = match;
-
         message.reply("_Waiting for a partner_ ");
-
         this.game[room.id] = room;
       }
     } catch (error) {
@@ -135,25 +133,37 @@ alpha(
       );
 
       if (room) {
+        let isSurrender = false;
+
+        if (/^surr?ender$/i.test(message.text)) {
+          isSurrender = true;
+        } else if (!/^[1-9]$/.test(message.text)) {
+          return; // If not a valid move or surrender command, return
+        }
+
+        if (isSurrender) {
+          let surrenderingPlayer = m.sender === room.game.playerX ? room.game.playerX : room.game.playerO;
+          delete this.game[room.id]; 
+
+          let str = `@${surrenderingPlayer.split("@")[0]} surrendered.`;
+let mentions = [surrenderingPlayer];
+await message.client.sendMessage(message.jid, { text: str, mentions });
+          return;
+        }
         let ok;
         let isWin = false;
         let isTie = false;
-        let isSurrender = false;
-
-        if (!/^([1-9]|(me)?give_up|surr?ender|off|skip)$/i.test(match)) return;
-        isSurrender = !/^[1-9]$/.test(match);
 
         if (m.sender !== room.game.currentTurn) {
-          if (!isSurrender) return true;
+          return true; // Not the player's turn
         }
 
         if (
-          !isSurrender &&
           1 >
-            (ok = room.game.turn(
-              m.sender === room.game.playerO,
-              parseInt(match) - 1
-            ))
+          (ok = room.game.turn(
+            m.sender === room.game.playerO,
+            parseInt(match) - 1
+          ))
         ) {
           message.reply({
             "-3": "The game is over",
@@ -164,8 +174,11 @@ alpha(
           return true;
         }
 
-        if (m.sender === room.game.winner) isWin = true;
-        else if (room.game.board === 511) isTie = true;
+        if (m.sender === room.game.winner) {
+          isWin = true;
+        } else if (room.game.board === 511) {
+          isTie = true;
+        }
 
         let arr = room.game.render().map((v) => {
           return {
@@ -189,7 +202,7 @@ alpha(
           delete this.game[room.id];
         }
 
-        let winner = isSurrender ? room.game.currentTurn : room.game.winner;
+        let winner = room.game.winner;
         let str = `Room ID: ${room.id}
 
 ${arr.slice(0, 3).join("")}
@@ -215,3 +228,4 @@ ${
     }
   }
 );
+
