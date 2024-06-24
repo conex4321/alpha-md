@@ -11,7 +11,7 @@ alpha(
       fromMe: true,
       desc: "Adds a personal filter. When triggered, sends the corresponding response globally.",
       usage: ".pfilter keyword:message",
-      type: "filters",
+      type: "autoreply",
     },
     async (message, match) => {
       try {
@@ -36,7 +36,7 @@ alpha(
       fromMe: true,
       desc: "Stops a previously added personal filter.",
       usage: '.pstop "hello"',
-      type: "filters",
+      type: "autoreply",
     },
     async (message, match) => {
       try {
@@ -61,7 +61,7 @@ alpha(
       fromMe: true,
       desc: "Adds a group filter. When triggered, sends the corresponding response.",
       usage: ".filter keyword:message",
-      type: "filters",
+      type: "autoreply",
     },
     async (message, match) => {
       try {
@@ -96,7 +96,7 @@ alpha(
       fromMe: true,
       desc: "Stops a previously added group filter.",
       usage: '.stop "hello"',
-      type: "filters",
+      type: "autoreply",
     },
     async (message, match) => {
       try {
@@ -133,9 +133,7 @@ alpha(
                 "gm",
               );
               if (pattern.test(txxt)) {
-                return await message.reply(filter.dataValues.text, {
-                  quoted: message,
-                });
+                return await message.reply(filter.dataValues.text);
               }
             });
           }
@@ -151,9 +149,7 @@ alpha(
                 "gm",
               );
               if (pattern.test(txxt)) {
-                return await message.reply(filter.dataValues.text, {
-                  quoted: message,
-                });
+                return await message.reply(filter.dataValues.text);
               }
             });
           }
