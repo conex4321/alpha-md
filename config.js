@@ -20,7 +20,7 @@ module.exports = {
   DISABLE_GRP: toBool(process.env.DISABLE_GRP) || false,
   ERROR_MSG: toBool(process.env.ERROR_MSG) || true,
   ERR_REPORT: toBool(process.env.ERR_REPORT) || false,
-  SESSION_ID: process.env.SESSION_ID || "A_L_P_H_A_24_06_22_0O8M_3D_M7",
+  SESSION_ID: process.env.SESSION_ID || "A_L_P_H_A_24_06_22_0O8M_3D_M7w",
   LANG: process.env.LANG || "EN",
   HANDLERS:
     process.env.HANDLERS === "false" || process.env.HANDLERS === "null"

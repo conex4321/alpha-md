@@ -32,13 +32,13 @@ async function startBot() {
     await reqextplugins();
     console.log("✅ Plugins Installed!");
     const sessionPath = path.join(__dirname, "session");
-    try {
+  /*  try {
       await fs.rm(sessionPath, { recursive: true, force: true });
     } catch (err) {
       if (err.code !== "ENOENT") throw err;
     }
     await fs.mkdir(sessionPath);
-    await fetchSession(config.SESSION_ID);
+    await fetchSession(config.SESSION_ID);*/
     return await bot();
   } catch (error) {
     console.error("Initialization error:", error);

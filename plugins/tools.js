@@ -1,4 +1,4 @@
-const { alpha, qrcode, Bitly, isPrivate, isUrl, readQr, parsedJid, secondsToDHMS, errorHandler } = require("../lib/");
+const { alpha, qrcode, Bitly, isPrivate, isUrl, readQr, parsedJid, errorHandler } = require("../lib/");
 const { downloadMediaMessage } = require("baileys");
 
 alpha(
@@ -73,21 +73,6 @@ alpha(
   },
 );
 
-alpha(
-  {
-    pattern: "uptime",
-    fromMe: true,
-    desc: "Check uptime of bot",
-    type: "user",
-  },
-  async (message) => {
-    try {
-      message.reply(`*Uptime:* ${secondsToDHMS(process.uptime())}`);
-    } catch (error) {
-      errorHandler(message, error);
-    }
-  },
-);
 
 alpha(
   {

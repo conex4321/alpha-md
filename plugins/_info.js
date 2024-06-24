@@ -1,5 +1,5 @@
 const plugins = require("../lib/plugins");
-const { alpha, isPrivate, runtime, errorHandler } = require("../lib");
+const { alpha, isPrivate, errorHandler, secondsToDHMS } = require("../lib");
 const { OWNER_NAME, BOT_NAME, TZ } = require("../config");
 const os = require("os");
 const packageJson = require("../package.json");
@@ -38,13 +38,12 @@ Description: ${i.desc}\`\`\``);
 ┃╭━━━━━━━━━━━━━━◉
 ┃┃ *Plugins :-* ${plugins.commands.length.toString()}
 ┃┃ *User :-* ${message.pushName}
-┃┃ *Owner :-* ${OWNER_NAME}
 ┃┃ *Version:-* ${packageJson.version} 
 ┃┃ *Prefix:-* ${prefix}
 ┃┃ *Mode :-* ${isPrivate ? "private" : "public"}
 ┃┃ *Date :-* ${date.trim()}
 ┃┃ *Time :-* ${time.trim()}
-┃┃ *Uptime :-* ${time.trim()}
+┃┃ *Uptime :-* ${secondsToDHMS(process.uptime())}
 ┃┃ *Ram :-* ${Math.round((os.totalmem() - os.freemem()) / 1024 / 1024)}MB
 ┃╰━━━━━━━━━━━━━◉`;
 
@@ -140,4 +139,20 @@ alpha(
       errorHandler(message, error);
     }
   }
+);
+
+alpha(
+  {
+    pattern: "uptime",
+    fromMe: true,
+    desc: "Check uptime of bot",
+    type: "user",
+  },
+  async (message) => {
+    try {
+      message.reply(`*Uptime:* ${secondsToDHMS(process.uptime())}`);
+    } catch (error) {
+      errorHandler(message, error);
+    }
+  },
 );
