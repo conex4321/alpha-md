@@ -28,7 +28,6 @@ alpha(
 
       await message.forward(message.jid, serializedMessage.quoted.message);
     } catch (error) {
-      console.error("Error in quoted command:", error);
       errorHandler(message, error);
     }
   },
