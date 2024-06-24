@@ -193,6 +193,7 @@ alpha(
     try {
       if (message.isGroup) {
         client.sendMessage(message.jid, { delete: message.reply_message.key });
+        //await message.sendMessage(message.jid, { key: message.reply_message.key }, {}, "delete");
       }
     } catch (error) {
       errorHandler(message, error);

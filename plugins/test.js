@@ -1,7 +1,7 @@
 const { alpha, isPrivate } = require("../lib");
 alpha(
     {
-      pattern: "p",
+      pattern: "paa",
       fromMe: isPrivate,
       desc: "To check ping",
       type: "info",
