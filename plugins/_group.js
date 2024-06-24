@@ -1,7 +1,7 @@
-const { alpha, isPrivate, errorHandler } = require("../lib");
+const { alpha, isPrivate, errorHandler, PREFIX } = require("../lib");
 const { isAdmin, parsedJid } = require("../lib");
 const { groupDB } = require("../lib/database/group");
-
+const { common } = require("../lib/common");
 alpha(
   {
     pattern: "add",
@@ -132,6 +132,47 @@ alpha(
     }
   },
 );
+
+alpha(
+  {
+    pattern: 'common',
+    fromMe: true,
+    desc: "Perform actions on common participants across multiple groups",
+    type: "group",
+  },
+  async (message, match, m, client) => {
+    try {
+
+      if (!match) {
+        return await message.reply(`Use ${PREFIX}common help for more info`);
+      }
+      if (match === 'help') {
+        return await message.reply(helpr);
+      }else 
+        {
+      const parts = match.split(';');
+      if (parts.length !== 2) {
+        return await message.reply(`Invalid command format. Use ${PREFIX}help for more info`);
+      }
+      const [jidsPart, action] = parts;
+      const jids = jidsPart.split(',').map(jid => jid.trim());
+      if (jids.length < 2) {
+        return await message.reply(`Please provide at least two group JIDs. Use ${PREFIX}help for more info`);
+      }
+      for (let jid of jids) {
+        if (!(await isAdmin(jid, message.user, message.client))) {
+          return await message.reply(`I'm not admin in ${jid}`);
+        }
+      }
+      return await common(message, jids, action.trim());
+    }
+    } catch (error) {
+      errorHandler(message, error);
+    }
+  }
+);
+const helpr = `To find common participants in multiple groups and perform actions, use the format: ${PREFIX}common <group1_jid>, <group2_jid>, ... ;<action>. Replace JIDs with groups to compare, separated by commas, then add a semicolon followed by the action. Actions include listing common participants (list/listall) or kicking them (kick/kickall). Example: ${PREFIX}common 120363266704865818@g.us, 120363303061636757@g.us;list.`;
+
 
 alpha(
   {

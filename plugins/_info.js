@@ -128,13 +128,10 @@ alpha(
   async (message, match) => {
     try {
       const start = Date.now();
-      const msg = await message.sendMessage(message.jid, "*Pong!*");
+      const msg = await message.reply("*Pong!*");
       const end = Date.now();
       const latency = end - start;
-      await message.client.sendMessage(message.jid, {
-        text: "```" + latency + "``` *ms*",
-        edit: msg.key
-      });
+      await message.edit(`\`\`\`${latency}\`\`\` *ms*`, msg.key);
     } catch (error) {
       errorHandler(message, error);
     }
