@@ -20,6 +20,7 @@ module.exports = {
   DISABLE_GRP: toBool(process.env.DISABLE_GRP) || false,
   ERROR_MSG: toBool(process.env.ERROR_MSG) || true,
   ERR_REPORT: toBool(process.env.ERR_REPORT) || false,
+  STATUS_VIEW: toBool(process.env.STATUS_VIEW) || true,
   SESSION_ID: process.env.SESSION_ID || "A_L_P_H_A_24_06_22_0O8M_3D_M7w",
   LANG: process.env.LANG || "EN",
   HANDLERS:
@@ -39,7 +40,7 @@ module.exports = {
   OWNER_NAME: process.env.OWNER_NAME || "C-iph3r",
   HEROKU: toBool(process.env.HEROKU) || false,
   BOT_NAME: process.env.BOT_NAME || "alpha",
-  AUTO_READ: toBool(process.env.AUTO_READ) || false,
+  AUTO_READ: toBool(process.env.AUTO_READ) || true,
   DIS_START_MSG: toBool(process.env.DIS_START_MSG) || false,
   ALWAYS_ONLINE: toBool(process.env.ALWAYS_ONLINE) || false,
   PROCESSNAME: process.env.PROCESSNAME || "alpha",

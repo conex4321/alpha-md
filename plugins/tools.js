@@ -1,29 +1,27 @@
 const { alpha, qrcode, Bitly, isPrivate, isUrl, readQr, parsedJid, errorHandler } = require("../lib/");
 const { downloadMediaMessage } = require("baileys");
 
-alpha(
-  {
-    pattern: "vv",
-    fromMe: isPrivate,
-    desc: "Forwards the viewed message",
-    type: "tool",
-  },
-  async (message, m) => {
-    try {
-      const buffer = await downloadMediaMessage(
-        m.quoted,
-        "buffer",
-        {},
-        {
-          reuploadRequest: message.client.updateMediaMessage,
-        },
-      );
-      await message.sendFile(buffer);
-    } catch (error) {
-      errorHandler(message, error);
-    }
-  },
-);
+alpha({
+  pattern: "vv",
+  fromMe: isPrivate,
+  desc: "Forwards the viewed message",
+  type: "tool",
+},
+async (message, match, m) => {
+  try {
+    const buffer = await downloadMediaMessage(
+      m.quoted,
+      "buffer",
+      {},
+      {
+        reuploadRequest: message.client.updateMediaMessage,
+      }
+    );
+    await message.sendFile(buffer);
+  } catch (error) {
+    errorHandler(message, error);
+  }
+});
 
 alpha(
   {
