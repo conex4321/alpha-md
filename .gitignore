@@ -2,3 +2,4 @@
 /session
 /database.db
 /.env
+/.gitpod.yml

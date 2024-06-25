@@ -12,23 +12,14 @@ alpha(
   },
   async (message, match, m) => {
     try {
-      if (
-        !message.reply_message ||
-        (!message.reply_message.video && !message.reply_message.audio)
-      ) {
+      const Regex = /^\d{2}:\d{2}\|\d{2}:\d{2}$/;
+      if (!message.reply_message || (!message.reply_message.video && !message.reply_message.audio)) {
         return await message.reply("Reply to a media file");
       }
-      if (!match)
-        return await message.reply(
-          "Give the start and end time in this format: mm:ss|mm:ss",
-        );
-
+      if (!Regex.test(match)) {
+        return await message.reply("Give the start and end time in this format: mm:ss|mm:ss");
+      }
       const [start, end] = match.split("|");
-      if (!start || !end)
-        return await message.reply(
-          "Give the start and end time in this format: mm:ss|mm:ss",
-        );
-
       const buffer = await m.quoted.download();
       const startSeconds = parseTimeToSeconds(start);
       const endSeconds = parseTimeToSeconds(end);
