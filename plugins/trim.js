@@ -16,16 +16,16 @@ alpha(
         !message.reply_message ||
         (!message.reply_message.video && !message.reply_message.audio)
       ) {
-        return await message.sendMessage("Reply to a media file");
+        return await message.reply("Reply to a media file");
       }
       if (!match)
-        return await message.sendMessage(
+        return await message.reply(
           "Give the start and end time in this format: mm:ss|mm:ss",
         );
 
       const [start, end] = match.split("|");
       if (!start || !end)
-        return await message.sendMessage(
+        return await message.reply(
           "Give the start and end time in this format: mm:ss|mm:ss",
         );
 
