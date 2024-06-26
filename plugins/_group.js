@@ -2,8 +2,9 @@ const { alpha, isPrivate, errorHandler, PREFIX } = require("../lib");
 const { isAdmin, parsedJid } = require("../lib");
 const { groupDB } = require("../lib/database/group");
 const { common } = require("../lib/common");
-alpha(
-  {
+const actions = ["kick", "warn", "null"];
+
+alpha({
     pattern: "add",
     fromMe: true,
     desc: "add a person to group",
@@ -28,8 +29,7 @@ alpha(
   },
 );
 
-alpha(
-  {
+alpha({
     pattern: "kick",
     fromMe: true,
     desc: "kicks a person from group",
@@ -54,8 +54,7 @@ alpha(
   },
 );
 
-alpha(
-  {
+alpha({
     pattern: "promote",
     fromMe: true,
     desc: "promote to admin",
@@ -83,8 +82,7 @@ alpha(
   },
 );
 
-alpha(
-  {
+alpha({
     pattern: "demote",
     fromMe: true,
     desc: "demote from admin",
@@ -112,8 +110,7 @@ alpha(
   },
 );
 
-alpha(
-  {
+alpha({
     pattern: "mute",
     fromMe: true,
     desc: "mute group",
@@ -133,8 +130,7 @@ alpha(
   },
 );
 
-alpha(
-  {
+alpha({
     pattern: 'common',
     fromMe: true,
     desc: "Perform actions on common participants across multiple groups",
@@ -142,7 +138,6 @@ alpha(
   },
   async (message, match, m, client) => {
     try {
-
       if (!match) {
         return await message.reply(`Use ${PREFIX}common help for more info`);
       }
@@ -174,8 +169,7 @@ alpha(
 const helpr = `To find common participants in multiple groups and perform actions, use the format: ${PREFIX}common <group1_jid>, <group2_jid>, ... ;<action>. Replace JIDs with groups to compare, separated by commas, then add a semicolon followed by the action. Actions include listing common participants (list/listall) or kicking them (kick/kickall). Example: ${PREFIX}common 120363266704865818@g.us, 120363303061636757@g.us;list.`;
 
 
-alpha(
-  {
+alpha({
     pattern: "unmute",
     fromMe: true,
     desc: "unmute group",
@@ -195,8 +189,7 @@ alpha(
   },
 );
 
-alpha(
-  {
+alpha({
     pattern: "gjid",
     fromMe: true,
     desc: "gets jid of all group members",
@@ -220,8 +213,7 @@ alpha(
   },
 );
 
-alpha(
-  {
+alpha({
     pattern: "tag",
     fromMe: true,
     desc: "mention all users in group",
@@ -252,8 +244,7 @@ alpha(
   },
 );
 
-alpha(
-  {
+alpha({
     pattern: "pdm",
     fromMe: true,
     desc: "promote, demote messages",
@@ -264,11 +255,7 @@ alpha(
       if (!message.isGroup) return;
       if (!match) return message.reply("pdm on/off");
       if (match != "on" && match != "off") return message.reply("pdm on");
-      const { pdm } = await groupDB(
-        ["pdm"],
-        { jid: message.jid, content: {} },
-        "get",
-      );
+      const { pdm } = await groupDB(["pdm"],{ jid: message.jid, content: {} }, "get",);
       if (match == "on") {
         if (pdm == "true") return message.reply("_Already activated_");
         await groupDB(["pdm"], { jid: message.jid, content: "true" }, "set");
@@ -284,8 +271,7 @@ alpha(
   },
 );
 
-alpha(
-  {
+alpha({
     pattern: "antifake",
     fromMe: true,
     desc: "remove fake numbers",
@@ -295,45 +281,25 @@ alpha(
     try {
       if (!message.isGroup) return;
       if (!match)
-        return await message.reply(
-          "_*antifake* 94,92_\n_*antifake* on/off_\n_*antifake* get_",
-        );
-      const { antifake } = await groupDB(
-        ["antifake"],
-        { jid: message.jid, content: {} },
-        "get",
-      );
+        return await message.reply("_*antifake* 234,94,92_\n_*antifake* on/off_\n_*antifake* get_");
+      const { antifake } = await groupDB(["antifake"],{ jid: message.jid, content: {} },"get",);
       if (match.toLowerCase() == "get") {
         if (!antifake || antifake.status == "false" || !antifake.data)
           return await message.reply("_Not Found_");
-        return await message.reply(
-          `_*activated restricted numbers*: ${antifake.data}_`,
-        );
+        return await message.reply(`_*activated restricted numbers*: ${antifake.data}_`);
       } else if (match.toLowerCase() == "on") {
         const data = antifake && antifake.data ? antifake.data : "";
-        await groupDB(
-          ["antifake"],
-          { jid: message.jid, content: { status: "true", data } },
-          "set",
-        );
+        await groupDB(["antifake"],{ jid: message.jid, content: { status: "true", data } },"set",);
         return await message.reply(`_Antifake Activated_`);
       } else if (match.toLowerCase() == "off") {
         const data = antifake && antifake.data ? antifake.data : "";
-        await groupDB(
-          ["antifake"],
-          { jid: message.jid, content: { status: "false", data } },
-          "set",
-        );
+        await groupDB(["antifake"],{ jid: message.jid, content: { status: "false", data } },"set",);
         return await message.reply(`_Antifake Deactivated_`);
       }
       match = match.replace(/[^0-9,!]/g, "");
       if (!match) return await message.reply("value must be number");
       const status = antifake && antifake.status ? antifake.status : "false";
-      await groupDB(
-        ["antifake"],
-        { jid: message.jid, content: { status, data: match } },
-        "set",
-      );
+      await groupDB(["antifake"],{ jid: message.jid, content: { status, data: match } },"set",);
       return await message.reply(`_Antifake Updated_`);
     } catch (error) {
       errorHandler(message, error);
@@ -341,8 +307,7 @@ alpha(
   },
 );
 
-alpha(
-  {
+alpha({
     pattern: "info",
     fromMe: isPrivate,
     desc: "get invite info of group",
@@ -399,8 +364,7 @@ alpha(
   },
 );
 
-alpha(
-  {
+alpha({
     pattern: "antivv",
     fromMe: true,
     desc: "auto-resends viewonce msgs in chat",
@@ -530,42 +494,22 @@ alpha(
     try {
       if (!message.isGroup) return;
       if (!match)
-        return await message.reply(
-          "_*antilink* on/off_\n_*antilink* action warn/kick/null_",
-        );
-      const { antilink } = await groupDB(
-        ["antilink"],
-        { jid: message.jid, content: {} },
-        "get",
-      );
+        return await message.reply("_*antilink* on/off_\n_*antilink* action warn/kick/null_",);
+      const { antilink } = await groupDB(["antilink"],{ jid: message.jid, content: {} },"get",);
       if (match.toLowerCase() == "on") {
         const action = antilink && antilink.action ? antilink.action : "null";
-        await groupDB(
-          ["antilink"],
-          { jid: message.jid, content: { status: "true", action } },
-          "set",
-        );
-        return await message.reply(
-          `_antilink Activated with action null_\n_*antilink action* warn/kick/null for chaning actions_`,
-        );
+        await groupDB(["antilink"],{ jid: message.jid, content: { status: "true", action } },"set",);
+        return await message.reply(`_antilink Activated with action null_\n_*antilink action* warn/kick/null for chaning actions_`,);
       } else if (match.toLowerCase() == "off") {
         const action = antilink && antilink.action ? antilink.action : "null";
-        await groupDB(
-          ["antilink"],
-          { jid: message.jid, content: { status: "false", action } },
-          "set",
-        );
+        await groupDB(["antilink"],{ jid: message.jid, content: { status: "false", action } },"set",);
         return await message.reply(`_antilink deactivated_`);
       } else if (match.toLowerCase().match("action")) {
         const status = antilink && antilink.status ? antilink.status : "false";
         match = match.replace(/action/gi, "").trim();
         if (!actions.includes(match))
           return await message.reply("_action must be warn,kick or null_");
-        await groupDB(
-          ["antilink"],
-          { jid: message.jid, content: { status, action: match } },
-          "set",
-        );
+        await groupDB(["antilink"],{ jid: message.jid, content: { status, action: match } },"set",);
         return await message.reply(`_AntiLink Action Updated_`);
       }
     } catch (error) {
@@ -585,14 +529,8 @@ alpha(
     try {
       if (!message.isGroup) return;
       if (!match)
-        return await message.reply(
-          "_*antiword* on/off_\n_*antiword* action warn/kick/null_",
-        );
-      const { antiword } = await groupDB(
-        ["antiword"],
-        { jid: message.jid, content: {} },
-        "get",
-      );
+        return await message.reply( "_*antiword* on/off_\n_*antiword* action warn/kick/null_");
+      const { antiword } = await groupDB(["antiword"],{ jid: message.jid, content: {} },"get",);
       if (match.toLowerCase() == "get") {
         const status = antiword && antiword.status == "true" ? true : false;
         if (!status || !antiword.word) return await message.reply("_Not Found_");
@@ -600,44 +538,26 @@ alpha(
       } else if (match.toLowerCase() == "on") {
         const action = antiword && antiword.action ? antiword.action : "null";
         const word = antiword && antiword.word ? antiword.word : undefined;
-        await groupDB(
-          ["antiword"],
-          { jid: message.jid, content: { status: "true", action, word } },
-          "set",
-        );
-        return await message.reply(
-          `_antiword Activated with action null_\n_*antiword action* warn/kick/null for chaning actions_`,
-        );
+        await groupDB(["antiword"],{ jid: message.jid, content: { status: "true", action, word } },"set",);
+        return await message.reply(`_antiword Activated with action null_\n_*antiword action* warn/kick/null for chaning actions_`,);
       } else if (match.toLowerCase() == "off") {
         const action = antiword && antiword.action ? antiword.action : "null";
         const word = antiword && antiword.word ? antiword.word : undefined;
-        await groupDB(
-          ["antiword"],
-          { jid: message.jid, content: { status: "false", action, word } },
-          "set",
-        );
+        await groupDB(["antiword"],{ jid: message.jid, content: { status: "false", action, word } },"set", );
         return await message.reply(`_antiword deactivated_`);
       } else if (match.toLowerCase().match("action")) {
         const status = antiword && antiword.status ? antiword.status : "false";
         match = match.replace(/action/gi, "").trim();
         if (!actions.includes(match))
           return await message.reply("_action must be warn,kick or null_");
-        await groupDB(
-          ["antiword"],
-          { jid: message.jid, content: { status, action: match } },
-          "set",
-        );
+        await groupDB(["antiword"],{ jid: message.jid, content: { status, action: match } },"set",);
         return await message.reply(`_antiword Action Updated_`);
       } else {
         if (!match)
           return await message.reply("_*Example:* antiword 🏳️‍🌈, gay, nigga_");
         const status = antiword && antiword.status ? antiword.status : "false";
         const action = antiword && antiword.action ? antiword.action : "null";
-        await groupDB(
-          ["antiword"],
-          { jid: message.jid, content: { status, action, word: match } },
-          "set",
-        );
+        await groupDB(["antiword"],{ jid: message.jid, content: { status, action, word: match } },"set",);
         return await message.reply(`_Antiwords Updated_`);
       }
     } catch (error) {
@@ -657,43 +577,59 @@ alpha(
     try {
       if (!message.isGroup) return;
       if (!match)
-        return await message.reply(
-          "_*antibot* on/off_\n_*antibot* action warn/kick/null_",
-        );
-      const { antibot } = await groupDB(
-        ["antibot"],
-        { jid: message.jid, content: {} },
-        "get",
-      );
+        return await message.reply("_*antibot* on/off_\n_*antibot* action warn/kick/null_",);
+      const { antibot } = await groupDB(["antibot"],{ jid: message.jid, content: {} },"get",);
       if (match.toLowerCase() == "on") {
         const action = antibot && antibot.action ? antibot.action : "null";
-        await groupDB(
-          ["antibot"],
-          { jid: message.jid, content: { status: "true", action } },
-          "set",
-        );
-        return await message.reply(
-          `_antibot Activated with action null_\n_*antibot action* warn/kick/null for chaning actions_`,
-        );
+        await groupDB(["antibot"],{ jid: message.jid, content: { status: "true", action } }, "set",);
+        return await message.reply(`_antibot Activated with action null_\n_*antibot action* warn/kick/null for chaning actions_`,);
       } else if (match.toLowerCase() == "off") {
         const action = antibot && antibot.action ? antibot.action : "null";
-        await groupDB(
-          ["antibot"],
-          { jid: message.jid, content: { status: "false", action } },
-          "set",
-        );
+        await groupDB(["antibot"],{ jid: message.jid, content: { status: "false", action } },"set",);
         return await message.reply(`_antibot deactivated_`);
       } else if (match.toLowerCase().match("action")) {
         const status = antibot && antibot.status ? antibot.status : "false";
         match = match.replace(/action/gi, "").trim();
         if (!actions.includes(match))
           return await message.reply("_action must be warn,kick or null_");
-        await groupDB(
-          ["antibot"],
-          { jid: message.jid, content: { status, action: match } },
-          "set",
-        );
+        await groupDB(["antibot"],{ jid: message.jid, content: { status, action: match } },"set",);
         return await message.reply(`_AntiBot Action Updated_`);
+      }
+    } catch (error) {
+      errorHandler(message, error);
+    }
+  },
+);
+
+alpha(
+  {
+    pattern: "antistk",
+    fromMe: true,
+    desc: "remove users who use forbidden stickers",
+    type: "group",
+  },
+  async (message, match) => {
+    try {
+      if (!message.isGroup) return;
+      if (!match)
+        return await message.reply( "_*antistk* on/off_\n_*antistk* action warn/kick/null_");
+      const { antisticker } = await groupDB(["antisticker"],{ jid: message.jid, content: {} },"get",);
+      if (match.toLowerCase() == "on") {
+        const action = antisticker && antisticker.action ? antisticker.action : "null";
+        await groupDB(["antisticker"],{ jid: message.jid, content: { status: "true", action } },"set",);
+        return await message.reply(`_antisticker Activated with action null_\n_*antistk action* warn/kick/null for chaning actions_`);
+      } else if (match.toLowerCase() == "off") {
+        const action = antisticker && antisticker.action ? antisticker.action : "null";
+        await groupDB(["antisticker"],{ jid: message.jid, content: { status: "false", action } },"set",);
+        return await message.reply(`_antisticker deactivated_`);
+      } else if (match.toLowerCase().match("action")) {
+        const status = antisticker && antisticker.status ? antisticker.status : "false";
+        match = match.replace(/action/gi, "").trim();
+     //   console.log('yglyfgileeeeeeeeeeee', match)
+        if (!actions.includes(match))
+          return await message.reply("_action must be warn,kick or null_");
+        await groupDB(["antisticker"], { jid: message.jid, content: { status, action: match } }, "set",);
+        return await message.reply(`_antisticker Action Updated_`);
       }
     } catch (error) {
       errorHandler(message, error);
