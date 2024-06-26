@@ -1,4 +1,4 @@
-const { alpha, isAdmin, parsedJid, isPrivate, getBuffer, fromMe  } = require("../lib");
+/*const { alpha, isAdmin, parsedJid, isPrivate, getBuffer, fromMe  } = require("../lib");
 const { stickban, GroupDBB } = require("../lib/database");
 const config = require("../config");
 const { delay } = require("baileys");
@@ -431,7 +431,7 @@ alpha({
 alpha(
 
   {
-     pattern: "stickban",
+     pattern: "stkban",
      fromMe: isPrivate,
      desc: "Ban a sticker in group",
   },
@@ -465,7 +465,7 @@ alpha(
 
 
 alpha({
-     pattern: "stickunban",
+     pattern: "stkunban",
      fromMe: isPrivate,
      desc: "Unban a sticker in group",
   },
@@ -491,5 +491,4 @@ alpha({
      }
 
   }
-);
-
+);*/
