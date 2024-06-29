@@ -58,7 +58,7 @@ async (message, match) => {
 });
 
 
-alpha({
+/*alpha({
     on: "message",
     fromMe: false,
     dontAddCommandList: true
@@ -71,3 +71,5 @@ async (message, match) => {
         errorHandler(message, error);
     }
 });
+
+*/
