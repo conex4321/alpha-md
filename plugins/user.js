@@ -215,7 +215,6 @@ alpha(
       let reason = message?.reply_message.text || match;
       reason = reason.replace(/@(\d+)/, "");
       reason = reason ? reason.length <= 1 : "Reason not Provided";
-
       const warnInfo = await saveWarn(userId, reason);
       let userWarnCount = warnInfo ? warnInfo.warnCount : 0;
       userWarnCount++;
@@ -225,15 +224,8 @@ alpha(
       );
       if (userWarnCount > WARN_COUNT) {
         const jid = parsedJid(userId);
-        await message.sendMessage(
-          message.jid,
-          "Warn limit exceeded kicking user"
-        );
-        return await message.client.groupParticipantsUpdate(
-          message.jid,
-          jid,
-          "remove"
-        );
+        await message.sendMessage(message.jid,"Warn limit exceeded kicking user");
+        return await message.client.groupParticipantsUpdate(message.jid,jid,"remove");
       }
     } catch (error) {
       errorHandler(message, error);

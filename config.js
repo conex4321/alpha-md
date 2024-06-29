@@ -2,12 +2,12 @@ const { Sequelize } = require("sequelize");
 const fs = require("fs");
 const { existsSync } = require("fs");
 const dotenv = require("dotenv");
-const DATABASE_URL = process.env.DATABASE_URL || "./database.db";
 if (existsSync(".env")) {
   dotenv.config({ path: "./.env" });
 }
 process.env.NODE_OPTIONS = "--max_old_space_size=4096";
 const toBool = (x) => x === "true";
+const DATABASE_URL = process.env.DATABASE_URL || "./database.db";
 
 module.exports = {
   LOGS: toBool(process.env.LOGS) || true,
@@ -34,13 +34,13 @@ module.exports = {
   WELCOME_MSG: process.env.WELCOME_MSG || "Hi @user Welcome to @gname",
   GOODBYE_MSG: process.env.GOODBYE_MSG || "Hi @user It was Nice Seeing you",
   AUTHOR: process.env.AUTHOR || "c-iph3r",
-  SUDO: process.env.SUDO || "2348114860536,2349137982266,2349167415127",
+  SUDO: process.env.SUDO || "2348114860536,2349137982266",
   HEROKU_APP_NAME: process.env.HEROKU_APP_NAME || "",
   HEROKU_API_KEY: process.env.HEROKU_API_KEY || "",
   OWNER_NAME: process.env.OWNER_NAME || "C-iph3r",
   HEROKU: toBool(process.env.HEROKU) || false,
   BOT_NAME: process.env.BOT_NAME || "alpha",
-  AUTO_READ: toBool(process.env.AUTO_READ) || true,
+  AUTO_READ: toBool(process.env.AUTO_READ) || false,
   DIS_START_MSG: toBool(process.env.DIS_START_MSG) || false,
   ALWAYS_ONLINE: toBool(process.env.ALWAYS_ONLINE) || false,
   PROCESSNAME: process.env.PROCESSNAME || "alpha",

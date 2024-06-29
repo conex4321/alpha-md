@@ -1,10 +1,8 @@
-/*const { alpha, isPrivate, errorHandler, parsedJid } = require("../lib");
+const { alpha, isPrivate, errorHandler, parsedJid, sleep } = require("../lib");
 const { groupDB } = require("../lib/database/group");
-const { stickban, GroupDBB } = require("../lib/database");
 const config = require("../config");
-const { PausedChats, WarnDB } = require("../lib/database");
+const { getWarns, saveWarn, resetWarn } = require("../lib/database/warn");
 const { WARN_COUNT } = require("../config");
-const { saveWarn } = WarnDB;
 
 alpha({
     on: "message",
@@ -13,68 +11,63 @@ alpha({
 },
 async (message, match) => {
     try {
-        if (!message.sticker) return;        
+        if (!message.sticker || !message.isGroup) return;
         const chatId = message.jid;
-        console.log(chatId)
         const sudoList = config.SUDO.split(',').map(Number);
         const senderId = message.key.participant.split("@")[0];
         if (!sudoList.includes(Number(senderId))) {
             const { antisticker } = await groupDB(["antisticker"], { jid: message.jid, content: {} }, "get");
-            console.log(antisticker.status , antisticker.action, 'jajfjklyafd')
             if (antisticker.status && antisticker.action) {
                 if (antisticker.action === "kick") {
-                    console.log('kjlyhliuagds;', 'kickkking')
-                    await message.client.sendMessage(chatId, {
-                        text: "_Banned Sticker_"
-                    });
-                    await delay(500);
-                    await message.client.groupParticipantsUpdate(chatId, [message.key.participant], "remove");
-                    await message.client.sendMessage(chatId, {
-                        delete: message.key
-                    });
+                    await message.client.sendMessage(chatId, { text: "_anti sticker_" })
+                    await sleep(500);
+                    await message.client.groupParticipantsUpdate(chatId, [message.key.participant], "remove")
+                    await message.client.sendMessage(chatId, { delete: message.key })
                 } else if (antisticker.action === "warn") {
-                    console.log('kjlyhliuagds;', 'warnning')
                     const userId = message.key.participant;
-                    const reason = "Using banned sticker"; 
-                    const warnInfo = await saveWarn(userId, reason);
+                    const reason = "anti sticker";
+                    const warnInfo = await getWarns(userId)
                     let userWarnCount = warnInfo ? warnInfo.warnCount : 0;
-                    userWarnCount++;                                    
-                    await message.client.sendMessage(chatId, {
-                        text: `_Warning_\nUser @${userId.split("@")[0]} warned.\nWarn Count: ${userWarnCount}.\nReason: ${reason}`
-                    });                                    
-                    await delay(500);
-                    await message.client.sendMessage(chatId, {
-                        delete: message.key
-                    });
-                    if (userWarnCount > WARN_COUNT) {
-                        await message.client.sendMessage(chatId, "Warn limit exceeded. Kicking user.");
+                    userWarnCount += 1;
+                    if (userWarnCount >= WARN_COUNT) {
+                        await message.client.sendMessage(chatId, {
+                            text: `_Warn limit exceeded. Kicking user @${userId.split("@")[0]}_`,
+                            mentions: [userId]
+                        })
                         const jid = parsedJid(userId);
-                        await message.client.groupParticipantsUpdate(chatId, [jid], "remove");
+                        await sleep(500);
+                        await resetWarn(userId)
+                        message.client.groupParticipantsUpdate(chatId, jid, "remove");
+                        return;
                     }
+                    await saveWarn(userId, reason)
+                    await message.client.sendMessage(chatId, {
+                        text: `_Warning_\nUser @${userId.split("@")[0]} warned.\nWarn Count: ${userWarnCount}.\nReason: ${reason}`,
+                        mentions: [userId]
+                    })
+                    await sleep(500);
+                    await message.client.sendMessage(chatId, { delete: message.key })
                 } else if (antisticker.action === "null") {
-                    console.log('kjlyhliuagds;', 'deletinggging')
-                    await message.client.sendMessage(chatId, {
-                        delete: message.key
-                    });
-                } else {
-                    console.log('kjlyhliuagds;', 'llllllll')
-                    await message.client.sendMessage(chatId, {
-                        delete: message.key
-                    });
+                    await message.client.sendMessage(chatId, { delete: message.key })
                 }
-            } else {
-                console.log('kjlyhliuagds;', 'kkkkkkkk')
-                await message.client.sendMessage(chatId, {
-                    delete: message.key
-                });
             }
-        } else {
-            return await message.client.sendMessage(chatId, {
-               text: "_Sudo user is using Banned Sticker_"
-            });
-         }
+        }
     } catch (error) {
         errorHandler(message, error);
     }
 });
-*/
+
+
+alpha({
+    on: "message",
+    fromMe: false,
+    dontAddCommandList: true
+},
+async (message, match) => {
+    try {
+        console.log('qjfhwlhdddddddddddddd:', message)
+        process.exit(0)
+    } catch (error) {
+        errorHandler(message, error);
+    }
+});

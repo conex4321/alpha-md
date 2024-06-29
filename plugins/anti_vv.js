@@ -1,4 +1,4 @@
-const { alpha } = require("../lib");
+const { alpha, isAdmin, parsedJid, isPrivate, getBuffer } = require("../lib");
 const { downloadMediaMessage } = require('baileys');
 const { groupDB } = require('../lib/database/group');
 
@@ -28,6 +28,3 @@ alpha({
         errorHandler(message, error);
     }
 });
-
-
-

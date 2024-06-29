@@ -375,11 +375,7 @@ alpha({
       if (!message.isGroup) return;
       if (!match) return message.reply("antivv on/off");
       if (match != "on" && match != "off") return message.reply("antivv on");
-      const { antiviewonce } = await groupDB(
-        ["antiviewonce"],
-        { jid: message.jid, content: {} },
-        "get",
-      );
+      const { antiviewonce } = await groupDB(["antiviewonce"],{ jid: message.jid, content: {} }, "get",);
       if (match == "on") {
         if (antiviewonce == "true") return message.reply("_Already activated_");
         await groupDB(["antiviewonce"], { jid: message.jid, content: "true" }, "set");
