@@ -47,6 +47,7 @@ module.exports = {
   WORK_TYPE: process.env.WORK_TYPE || "private",
   TZ: process.env.TZ || "Africa/Lagos",
   DELETED_LOG: toBool(process.env.DELETED_LOG) || true,
+  DELETED_LOG_CHAT: "120363293418213276@g.us",
   DATABASE_URL: DATABASE_URL,
   DATABASE:
     DATABASE_URL === "./database.db"
