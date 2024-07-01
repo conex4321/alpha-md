@@ -1,24 +1,30 @@
-const { DELETED_LOG_CHAT, DELETED_LOG } = require("../config");
-const { alpha, isPrivate, serialize } = require("../lib");
+const { ANTI_DELETE } = require("../config");
+const { alpha, serialize } = require("../lib");
 const { loadMessage, getName } = require("../lib/database/Store");
+
 alpha(
   {
     on: "delete",
     fromMe: false,
-    desc: "Logs the recent deleted message",
+    desc: "Logs the recently deleted message",
   },
   async (message, match) => {
-    if (!DELETED_LOG) return;
-    if (!DELETED_LOG_CHAT)
-      return await message.sendMessage(
-        message.user,
-        "Please set DELETED_LOG_CHAT in ENV to use log delete message"
-      );
+    let DELETED_LOG_CHAT;
+    if (ANTI_DELETE === 'g') {
+      DELETED_LOG_CHAT = message.jid;
+    } else if (ANTI_DELETE === 'p') {
+      DELETED_LOG_CHAT = message.user;
+    } else if (ANTI_DELETE.endsWith('@g.us') || ANTI_DELETE.endsWith('@s.whatsapp.net')) {
+      DELETED_LOG_CHAT = 'antidelete'; 
+    } else {
+      return;
+    }
+
+    if (!DELETED_LOG_CHAT) return;
     let msg = await loadMessage(message.messageId);
     if (!msg) return;
-    msg = await serialize(JSON.parse(JSON.stringify(msg.message)),message.client);
+    msg = await serialize(JSON.parse(JSON.stringify(msg.message)), message.client);
     if (!msg) return await message.reply("No deleted message found");
-    //return console.log('uaiugiaugaiug', msg.message )
     let deleted = await message.forward(DELETED_LOG_CHAT, msg.message);
     var name;
     if (!msg.from.endsWith("@g.us")) {
@@ -29,8 +35,8 @@ alpha(
       let getname = await getName(msg.sender);
       name = `_Group : ${gname}_\n_Name : ${getname}_`;
     }
-    return await message.sendMessage(DELETED_LOG_CHAT,      `_Message Deleted_\n_From : ${msg.from}_\n${name}+\n_SenderJid : ${msg.sender}_`,
-      { quoted: deleted }
-    );
+    return await message.client.sendMessage(DELETED_LOG_CHAT, {
+      text: `_Message Deleted_\n_From : ${msg.from}_\n${name}\n_SenderJid : ${msg.sender}_`
+    }, { quoted: deleted });
   }
 );
