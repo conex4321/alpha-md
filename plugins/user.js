@@ -33,7 +33,7 @@ alpha(
   async (message, match) => {
     try {
       await message.sendMessage(message.jid, "Shutting down...");
-      exec("pm2 stop x-asena", (error, stdout, stderr) => {
+      exec("pm2 stop alpha", (error, stdout, stderr) => {
         if (error) {
           return message.sendMessage(message.jid, `Error: ${error}`);
         }
@@ -206,26 +206,34 @@ alpha(
     pattern: "warn",
     fromMe: true,
     desc: "Warn a user",
+    type: "group"
   },
   async (message, match) => {
     try {
       if (!message.isGroup) return;
       const userId = message.mention[0] || message.reply_message.jid;
       if (!userId) return message.reply("Mention or reply to someone");
-      let reason = message?.reply_message.text || match;
+      let reason = message.reply_message?.text || match;
       reason = reason.replace(/@(\d+)/, "");
-      reason = reason ? reason.length <= 1 : "Reason not Provided";
-      const warnInfo = await saveWarn(userId, reason);
+      reason = reason.length <= 1 ? "Reason not Provided" : reason;
+      const warnInfo = await getWarns(userId);
       let userWarnCount = warnInfo ? warnInfo.warnCount : 0;
-      userWarnCount++;
-      await message.reply(
-        `User @${userId.split("@")[0]} warned.\nWarn Count: ${userWarnCount}.\nReason: ${reason}`,
-        { mentions: [userId] }
-      );
-      if (userWarnCount > WARN_COUNT) {
-        const jid = parsedJid(userId);
-        await message.sendMessage(message.jid,"Warn limit exceeded kicking user");
-        return await message.client.groupParticipantsUpdate(message.jid,jid,"remove");
+      userWarnCount += 1;
+
+      if (userWarnCount >= WARN_COUNT) {
+        await message.client.sendMessage(message.jid, {
+          text: `_Warn limit exceeded. Kicking user @${userId.split("@")[0]}_`,
+          mentions: [userId]
+        });
+        await sleep(500);
+        await resetWarn(userId);
+        await message.client.groupParticipantsUpdate(message.jid, userId, "remove");
+      } else {
+        await saveWarn(userId, reason);
+        await message.reply(
+          `User @${userId.split("@")[0]} warned.\nWarn Count: ${userWarnCount}.\nReason: ${reason}`,
+          { mentions: [userId] }
+        );
       }
     } catch (error) {
       errorHandler(message, error);
@@ -233,11 +241,13 @@ alpha(
   }
 );
 
+
 alpha(
   {
-    pattern: "resetwarn",
+    pattern: "rstwarn",
     fromMe: true,
     desc: "Reset warnings for a user",
+    type: "group"
   },
   async (message) => {
     try {
@@ -245,10 +255,7 @@ alpha(
       const userId = message.mention[0] || message.reply_message.jid;
       if (!userId) return message.reply("Mention or reply to someone");
       await resetWarn(userId);
-      return await message.reply(
-        `Warnings for @${userId.split("@")[0]} reset`,
-        { mentions: [userId] }
-      );
+      return await message.reply(`Warnings for @${userId.split("@")[0]} reset`,{ mentions: [userId] });
     } catch (error) {
       errorHandler(message, error);
     }
