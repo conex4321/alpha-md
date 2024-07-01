@@ -46,7 +46,7 @@ module.exports = {
   PROCESSNAME: process.env.PROCESSNAME || "alpha",
   WORK_TYPE: process.env.WORK_TYPE || "private",
   TZ: process.env.TZ || "Africa/Lagos",
-  ANTI_DELETE: toBool(process.env.ANTI_DELETE) || 'p', //can also use p to send to pm  or jid eg ''  to send to the jid 2349167415127@s.whatsapp.net 120363293418213276@g.us
+  ANTI_DELETE: toBool(process.env.ANTI_DELETE) || 'g', //can also use p to send to pm  or jid eg ''  to send to the jid 2349167415127@s.whatsapp.net 120363293418213276@g.us
   DATABASE_URL: DATABASE_URL,
   DATABASE:
     DATABASE_URL === "./database.db"
