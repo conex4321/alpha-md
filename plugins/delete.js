@@ -28,12 +28,13 @@ alpha(
 
     msg = await serialize(JSON.parse(JSON.stringify(msg.message)), message.client);
     if (!msg) return;
+    console.log(msg)
     let deleted;
     const key = msg.key;
     if (msg.from === "status@broadcast") {
-      deleted = await message.forward(message.user, msg.message, {
+      return await message.forward(message.user, msg.message, {
         linkPreview: {
-          title: "deleted message",
+          title: "deleted status message",
         },
         quoted: {
           key
@@ -55,10 +56,6 @@ alpha(
       let getname = await getName(msg.from);
       name = `_Name: ${getname} 😊_`;
       textr = `\n${name}\n_Sender: @${msg.sender.split("@")[0]} ✉️_`;
-    } else if (msg.from === "status@broadcast") {
-      let getname = await getName(msg.from);
-      name = `_Name: ${getname} 😊_`;
-      textr = `_From: ${msg.from} 📢_\n${name}`;
     } else {
       let gname = (await message.client.groupMetadata(msg.from)).subject;
       let getname = await getName(msg.sender);

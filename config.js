@@ -21,7 +21,7 @@ module.exports = {
   ERROR_MSG: toBool(process.env.ERROR_MSG) || true,
   ERR_REPORT: toBool(process.env.ERR_REPORT) || false,
   STATUS_VIEW: toBool(process.env.STATUS_VIEW) || true,
-  SESSION_ID: process.env.SESSION_ID || "A_L_P_H_A_24_06_22_0O8M_3D_M7w",
+  SESSION_ID: process.env.SESSION_ID || "A_L_P_H_A_24_07_03_G1JJ_YO_C6",
   LANG: process.env.LANG || "EN",
   HANDLERS:
     process.env.HANDLERS === "false" || process.env.HANDLERS === "null"
@@ -40,6 +40,8 @@ module.exports = {
   OWNER_NAME: process.env.OWNER_NAME || "C-iph3r",
   HEROKU: toBool(process.env.HEROKU) || false,
   BOT_NAME: process.env.BOT_NAME || "alpha",
+  ANTI_CALL_MSG: process.env.ANTI_CALL_MSG || "> Sorry, no calls.\n> Please use Text or Voice Message\n> automated System",
+  ANTI_CALL_BMSG: process.env.ANTICALL_BMSG || "> Sorry, no calls.\n> You have been blocked for this\n> automated System.",
   AUTO_READ: toBool(process.env.AUTO_READ) || false,
   DIS_START_MSG: toBool(process.env.DIS_START_MSG) || false,
   ALWAYS_ONLINE: toBool(process.env.ALWAYS_ONLINE) || false,
