@@ -19,12 +19,13 @@ async (message, match) => {
         const senderId = message.key.participant.split("@")[0];
         if (sudoList.includes(Number(senderId))) return;
         const isYouAdmin = await isAdmin(chatId, userId, message.client);
+        await sleep(1000);
         const isMeAdmin = await isAdmin(chatId, message.user, message.client);
         
         const { antisticker } = await groupDB(["antisticker"], { jid: message.jid, content: {} }, "get");
         if (antisticker && antisticker.status && antisticker.action) {
             const msg = await message.reply("*_Sticker Detected!_*");
-            await sleep(1000);;
+            await sleep(1000);
             if (isYouAdmin) {
                 await message.edit("_Verified Admin!_", msg.key);
             } else if (!isMeAdmin) {
@@ -88,6 +89,7 @@ async (message, match) => {
         const senderId = message.key.participant.split("@")[0];
         if (sudoList.includes(Number(senderId))) return;
         const isYouAdmin = await isAdmin(chatId, userId, message.client);
+        await sleep(1000);
         const isMeAdmin = await isAdmin(chatId, message.user, message.client);
         
         const { antibot } = await groupDB(["antibot"], { jid: message.jid, content: {} }, "get");
