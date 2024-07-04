@@ -1,7 +1,8 @@
 const { alpha, isPrivate, errorHandler, PREFIX } = require("../lib");
-const { isAdmin, parsedJid } = require("../lib");
+const { isAdmin, parsedJid, serialize } = require("../lib");
 const { groupDB } = require("../lib/database/group");
 const { common } = require("../lib/common");
+const { loadMessage } = require("../lib/database/Store");
 const actions = ["kick", "warn", "null"];
 
 alpha({
@@ -30,29 +31,42 @@ alpha({
 );
 
 alpha({
-    pattern: "kick",
-    fromMe: true,
-    desc: "kicks a person from group",
-    type: "group",
-  },
-  async (message, match) => {
-    try {
-      if (!message.isGroup)
-        return await message.reply("_This command is for groups_");
+  pattern: "kick",
+  fromMe: true,
+  desc: "kicks a person or everyone from group",
+  type: "group",
+},
+async (message, match) => {
+  try {
+    if (!message.isGroup)
+      return await message.reply("_This command is for groups_");
+    const isadmin = await isAdmin(message.jid, message.user, message.client);
+    if (!isadmin) return await message.reply("_I'm not admin_");
+    if (match === "all") {
+      let { participants } = await message.client.groupMetadata(message.jid);
+      for (let key of participants) {
+        let jid = parsedJid(key.id);
+        if (!(parsedJid(message.client.user.id)[0] in jid)) {
+          await message.client.groupParticipantsUpdate(message.jid, jid, "remove");
+          await message.reply(`@${jid[0].split("@")[0]} kicked`, {
+            mentions: jid,
+          });
+        }
+      }
+    } else {
       match = match || message.reply_message.jid;
       if (!match) return await message.reply("_Mention user to kick_");
-      const isadmin = await isAdmin(message.jid, message.user, message.client);
-      if (!isadmin) return await message.reply("_I'm not admin_");
       const jid = parsedJid(match);
       await message.client.groupParticipantsUpdate(message.jid, jid, "remove");
       return await message.reply(`_@${jid[0].split("@")[0]} kicked_`, {
         mentions: [jid],
       });
-    } catch (error) {
-      errorHandler(message, error);
     }
-  },
-);
+  } catch (error) {
+    errorHandler(message, error);
+  }
+});
+
 
 alpha({
     pattern: "promote",
@@ -213,7 +227,7 @@ alpha({
   },
 );
 
-alpha({
+/*alpha({
     pattern: "tag",
     fromMe: true,
     desc: "mention all users in group",
@@ -221,6 +235,7 @@ alpha({
   },
   async (message, match) => {
     try {
+      const msggg = message.reply_message.audio || message.reply_message.sticker || message.reply_message.video || message.reply_message.image
       if (!message.isGroup) return;
       const { participants } = await message.client.groupMetadata(message.jid);
       if (match === "all") {
@@ -231,18 +246,23 @@ alpha({
         message.sendMessage(message.jid, teks.trim(), {
           mentions: participants.map((a) => a.id),
         });
-      } else {
-        match = match || message.reply_message.text;
+      } else if (match || message.reply_message.text) {
+        match = match || message.reply_message.text
         if (!match) return message.reply("_Enter or reply to a text to tag_");
         message.sendMessage(message.jid, match, {
           mentions: participants.map((a) => a.id),
         });
+      } else if(msggg) {
+        let key = msggg.key;
+        let msg = await loadMessage(key.id);
+        msg = await serialize(JSON.parse(JSON.stringify(msg.message)),message.client);
+        return await message.forward(message.jid, msg, {contextInfo: {mentionedJid: participants.map(a => a.id)}});
       }
     } catch (error) {
       errorHandler(message, error);
     }
   },
-);
+);*/
 
 alpha({
     pattern: "pdm",

@@ -43,7 +43,7 @@ module.exports = {
   ANTI_CALL_MSG: process.env.ANTI_CALL_MSG || "> Sorry, no calls.\n> Please use Text or Voice Message\n> automated System",
   ANTI_CALL_BMSG: process.env.ANTICALL_BMSG || "> Sorry, no calls.\n> You have been blocked for this\n> automated System.",
   AUTO_READ: toBool(process.env.AUTO_READ) || false,
-  DIS_START_MSG: toBool(process.env.DIS_START_MSG) || false,
+  DIS_START_MSG: toBool(process.env.DIS_START_MSG) || true,
   ALWAYS_ONLINE: toBool(process.env.ALWAYS_ONLINE) || false,
   PROCESSNAME: process.env.PROCESSNAME || "alpha",
   WORK_TYPE: process.env.WORK_TYPE || "private",

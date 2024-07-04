@@ -28,7 +28,7 @@ alpha(
 
     msg = await serialize(JSON.parse(JSON.stringify(msg.message)), message.client);
     if (!msg) return;
-    console.log(msg)
+   // console.log(msg)
     let deleted;
     const key = msg.key;
     if (msg.from === "status@broadcast") {
@@ -60,7 +60,7 @@ alpha(
       let gname = (await message.client.groupMetadata(msg.from)).subject;
       let getname = await getName(msg.sender);
       name = `_Group Name: ${gname} 📛_\n_Name: ${getname} 😊_`;
-      textr = `_From: ${msg.from} 📢_\n${name}\n_Sender: @${msg.sender.split("@")[0]} ✉️_`;
+      textr = `${name}\n_Sender: @${msg.sender.split("@")[0]} ✉️_`;
     }
 
     return await message.client.sendMessage(DELETED_LOG_CHAT, {

@@ -1,7 +1,8 @@
-const { alpha, isAdmin, parsedJid, isPrivate, errorHandler } = require("../lib");
+const { alpha, isAdmin, serialize, errorHandler } = require("../lib");
 const { WA_DEFAULT_EPHEMERAL } = require("baileys");
 const { exec } = require("child_process");
 const { PausedChats, WarnDB } = require("../lib/database");
+const { loadMessage } = require("../lib/database/Store");
 const { WARN_COUNT } = require("../config");
 const { saveWarn, resetWarn } = WarnDB;
 
@@ -452,3 +453,47 @@ alpha({
     errorHandler(message, error);
   }
 });
+
+
+alpha({
+  pattern: 'save',
+  fromMe: true,
+  desc: 'sends quoted messages to pm',
+  type: 'whatsapp'
+}, async (message, match, cmd) => {
+  try {
+    let key = message.reply_message.key;
+    let msg = await loadMessage(key.id);
+    msg = await serialize(JSON.parse(JSON.stringify(msg.message)),message.client);
+    return await message.forward(message.user, msg, {
+      quoted: message.data,
+      linkPreview: {
+                   title: "msg saver"
+      }
+})
+  } catch (error) {
+    errorHandler(message, error);
+  }
+});
+
+
+alpha({
+  pattern: 'caption',
+	fromMe: true,
+	desc: 'copy or add caption to video or image',
+	type: 'whatsapp',
+}, async (message, match, m) => {
+  try {
+    if ((message.reply_message.image || message.reply_message.video) && match)
+			return await message.forward(message.jid,
+				await m.quoted.download(),
+				{ quoted: message.data, caption: match },
+			)
+		if (message.reply_message.text)
+			return await message.forward(message.jid, message.reply_message.text,
+				{ quoted: message.data})
+  } catch (error) {
+    errorHandler(message, error);
+  }
+});
+

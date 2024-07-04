@@ -1,5 +1,6 @@
-const { alpha, qrcode, Bitly, isPrivate, isUrl, readQr, parsedJid, errorHandler } = require("../lib/");
+const { alpha, qrcode, Bitly, isPrivate, isUrl, readQr, parsedJid, errorHandler, serialize } = require("../lib/");
 const { downloadMediaMessage } = require("baileys");
+const { loadMessage } = require("../lib/database/Store");
 
 alpha({
   pattern: "vv",
@@ -22,6 +23,26 @@ async (message, match, m) => {
     errorHandler(message, error);
   }
 });
+
+alpha(
+  {
+    pattern: "quote",
+    fromMe: isPrivate,
+    desc: "resends messages quoting user ",
+    type: 'misc'
+  },
+  async (message, match) => {
+    if (!message.reply_message)
+      return await message.reply("*Reply to a message*");
+    let key = message.reply_message.key;
+    let msg = await loadMessage(key.id);
+    if (!msg)
+      return await message.reply("_Message not found maybe bot might not be running at that time_");
+    msg = await serialize(JSON.parse(JSON.stringify(msg.message)),message.client);
+    if (!msg.quoted) return await message.reply("No quoted message found");
+    await message.forward(message.jid, msg.quoted.message);
+  }
+);
 
 alpha(
   {
