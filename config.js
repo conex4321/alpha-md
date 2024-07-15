@@ -21,7 +21,7 @@ module.exports = {
   ERROR_MSG: toBool(process.env.ERROR_MSG) || true,
   ERR_REPORT: toBool(process.env.ERR_REPORT) || false,
   STATUS_VIEW: toBool(process.env.STATUS_VIEW) || true,
-  SESSION_ID: process.env.SESSION_ID || "A_L_P_H_A_24_07_03_G1JJ_YO_C6",
+  SESSION_ID: process.env.SESSION_ID || "A_L_P_H_A_24_07_15_X6F8_OK_VX",
   LANG: process.env.LANG || "EN",
   HANDLERS:
     process.env.HANDLERS === "false" || process.env.HANDLERS === "null"
