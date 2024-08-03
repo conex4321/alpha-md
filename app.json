@@ -1,175 +1,79 @@
 {
-  "name": "alpha@1.1.0",
-  "description": "whatsapp bot made using @WhiskeySockets/Baileys",
-  "keywords": ["whatsapp"],
+  "name": "alpha-md",
+  "description": "WhatsApp bot made using @WhiskeySockets/Baileys",
+  "logo": "https://graph.org/file/81fa99ef8cef33df050ab.jpg",
+  "keywords": [
+    "nodejs",
+    "bot",
+    "whatsapp bot",
+    "theme bot",
+    "multi device",
+    "baileys",
+    "c-iph3r",
+    "alpha-md",
+    "bot",
+    "qrcode",
+    "whatsapp",
+    "whatsapp-web",
+    "whatsapp-bot",
+    "baileys-md",
+    "baileys-bot",
+    "whatsapp-bot-md",
+    "chatgpt"
+  ],
   "success_url": "/",
   "stack": "container",
   "env": {
-    "SESSION_ID": {
-      "description": "your session id to run bot",
-      "required": true,
-      "value": "null"
+    "OWNER_NAME": {
+      "description": "Name of Bot Owner",
+      "value": "kiyoshi"
     },
-    "LOGS": {
-      "description": "display messages in log",
-      "required": true,
-      "value": "true"
+    "THUMB_IMAGE": {
+      "description": "Thumbnail for bot",
+      "value": "https://graph.org/file/81fa99ef8cef33df050ab.jpg"
     },
     "SUDO": {
-      "description": "your sudo number(s) separated by a comma(,)",
-      "required": true,
-      "value": ""
+      "description": "Put owner number (remove the + and use international format, e.g., 2347039570336)",
+      "required": true
     },
-    "LANG": {
-      "description": "your desired language default(EN)",
-      "required": true,
-      "value": "EN"
+    "PREFIX": {
+      "description": "Enter your desired prefix for the bot",
+      "value": "."
     },
-    "HANDLERS": {
-      "description": "your desired prefix for multi use'[]'",
-      "required": true,
-      "value": "^[#.,]"
+    "OWNER_NUMBER": {
+      "description": "Phone numbers of admin users (international format without +, separated by commas)",
+      "value": "23481....."
     },
-    "TZ": {
-      "description": "your timezone not if worng value can cause error",
-      "required": true,
-      "value": "Africa/Lagos"
+    "SESSION_ID": {
+      "description": "Put your SESSION_ID here.",
+      "value": "Replace Me",
+      "required": true
     },
-    "DATABASE_URL": {
-      "description": "your pg database url",
-      "required": false,
-      "value": ""
+    "GEMINI_API_KEY": {
+      "description": "Gemini API key (optional). Get it from https://aistudio.google.com/app/apikey",
+      "value": "Replace Me",
+      "required": false
     },
-    "PM_BLOCK": {
-      "description": "block private messages",
-      "required": false,
-      "value": "false"
+    "MONGODB_URL": {
+      "description": "MongoDB connection string (required for a better experience)",
+      "value": "",
+      "required": true
     },
-    "AJOIN": {
-      "description": "allow auto join groups",
-      "required": false,
-      "value": "false"
+    "PACK_INFO": {
+      "description": "Packname and authorname",
+      "value": "c-iph3r;alpha-md",
+      "required": false
     },
-    "REJECT_CALL": {
-      "description": "reject call",
-      "required": false,
-      "value": "true"
-    },
-    "CALL_BLOCK": {
-      "description": "block call",
-      "required": false,
-      "value": "false"
-    },
-    "DISABLE_PM": {
-      "description": "disable private messages",
-      "required": false,
-      "value": "false"
-    },
-    "DISABLE_GRP": {
-      "description": "disable group messages",
-      "required": false,
-      "value": "false"
-    },
-    "ERROR_MSG": {
-      "description": "display error messages",
-      "required": false,
-      "value": "true"
-    },
-    "REPO": {
-      "description": "repository information",
-      "required": false,
-      "value": "C-iph3r/alpha-md"
-    },
-    "PACKNAME": {
-      "description": "package name",
-      "required": false,
-      "value": "alpha"
-    },
-    "WELCOME_MSG": {
-      "description": "welcome message",
-      "required": false,
-      "value": "Hi @user Welcome to @gname"
-    },
-    "GOODBYE_MSG": {
-      "description": "goodbye message",
-      "required": false,
-      "value": "Hi @user It was Nice Seeing you"
-    },
-    "AUTHOR": {
-      "description": "author information",
-      "required": false,
-      "value": "c-iph3r"
-    },
-    "HEROKU_APP_NAME": {
-      "description": "name same name you just used above",
-      "required": true,
-      "value": ""
-    },
-    "HEROKU_API_KEY": {
-      "description": "Heroku API key",
-      "required": true,
-      "value": ""
-    },
-    "OWNER_NAME": {
-      "description": "owner's name",
-      "required": false,
-      "value": "C-iph3r"
-    },
-    "HEROKU": {
-      "description": "is heroku?",
-      "required": true,
-      "value": "true"
-    },
-    "BOT_NAME": {
-      "description": "bot name",
-      "required": false,
-      "value": "alpha-md"
-    },
-    "AUTO_READ": {
-      "description": "auto read messages",
-      "required": false,
-      "value": "false"
-    },
-    "DIS_START_MSG": {
-      "description": "disable start message",
-      "required": false,
-      "value": "false"
-    },
-    "ALWAYS_ONLINE": {
-      "description": "always online",
-      "required": false,
-      "value": "false"
-    },
-    "PROCESSNAME": {
-      "description": "process name",
-      "required": false,
-      "value": "alpha"
-    },
-    "WORK_TYPE": {
-      "description": "work type",
-      "required": false,
-      "value": "private"
-    },
-    "DELETED_LOG": {
-      "description": "logs deleted messages",
-      "required": false,
-      "value": "false"
+    "PORT": {
+      "description": "Port number",
+      "value": "5000",
+      "required": true
     }
   },
-  "addons": [
-    {
-      "plan": "heroku-postgresql"
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "basic"
     }
-  ],
-  "buildpacks": [
-    {
-      "url": "heroku/nodejs"
-    },
-    {
-      "url": "https://github.com/jonathanong/heroku-buildpack-ffmpeg-latest"
-    },
-    {
-      "url": "https://github.com/clhuang/heroku-buildpack-webp-binaries.git"
-    }
-  ]
+  }
 }
