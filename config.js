@@ -7,14 +7,14 @@ if (fs.existsSync('.env')) {
 
 global.__basedir = __dirname;
 global.owner = process.env.OWNER_NUMBER || ''; // Owner number
-global.mongodb = process.env.MONGODB_URL || ''; // MongoDB URL
+global.mongodb = process.env.MONGODB_URL || 'postgresql://conex_user:mC1KYIsOzbT5r82KtLmMAJVRbBhrryzb@dpg-cqelgp9u0jms739etkpg-a.oregon-postgres.render.com/conex'; // MongoDB URL
 global.port = process.env.PORT || 5001; // Port
 global.sudo = process.env.SUDO || ''; // Sudo number
 global.website = ''; // Website URL
 global.log0 = process.env.THUMB_IMAGE || 'https://graph.org/file/81fa99ef8cef33df050ab.jpg'; // Bot image
 
 module.exports = {
-  SESSION_ID: process.env.SESSION_ID || '', // Paste your session_id here
+  SESSION_ID: process.env.SESSION_ID || '17_8_9fcf_1075_f323', // Paste your session_id here
   TZ: process.env.TZ || 'Africa/Lagos', // Time zone (leave as is if unsure)
   WARN_COUNT: process.env.WARN_COUNT || 3,
   GEMINI_API_KEY: process.env.GEMINI_API_KEY || false, // Get one from https://aistudio.google.com/app/apikey
